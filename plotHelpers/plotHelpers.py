@@ -3,6 +3,7 @@
 # from sklearn.metrics import confusion_matrix
 import timeit
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import colorcet as cc
@@ -34,6 +35,24 @@ def timeUsage(func):
 def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
                         type='counts', titleText=None, ax=None,
                         saveAs=None):
+    """
+    INPUTS:
+        confustionMat	np.array (square, floats), containing 
+        xlabels		list (type=str), containing labels for predict
+        ylabels		list (type=str), containing labels for actual
+        type		str, in ['counts', 'recall', 'precision'], indicating
+                        whether to plot raw counts, normalized along predicted,
+                        normalized along actual
+        titleText	str, title for plot
+        ax		optional matplotlib.axis object, default: None
+        saveAs	str, in ['pdf', 'png', 'svg']
+
+    Creates heatmap representing confusion matrix passed via confusionMat. When
+    type == 'recall', normalization across predicted values ensures that
+    diagonal elements represent recall for each class, and 'precision'
+    normalizes across actual values so that diagonal elements represent class
+    precisions. (For recall and precision, max values are 1.0.)
+    """
 
     if xlabels is None:
         xlabels = list(range(len(confusionMat) + 1))
@@ -69,6 +88,7 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
     plt.ylabel('Actual', fontsize=15)
     plt.xlabel('Predicted', fontsize=15)
     plt.title(", ".join(['Confusion matrix', name, titleText]), fontsize=18)
+
     if saveAs == 'pdf':
         plt.savefig("".join(['ConfusionMatrix', name,
                              fileNameAugmentString, '.pdf']))
@@ -83,74 +103,85 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
 
 
 @timeUsage
-def splitBalancedDataFrameClasses(df, classColumn, targetClassSize,
-                                  testFrac=0.33, randomizeResult=True,
-                                  randomState=None, volubility=1):
+def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
+                    xrot=65.0, titleText=None, ax=None, saveAs=None):
     """
-    Conducts train/test splits of df separately for each class, then balances
-    the classes of the training splits, and concatentates together. Balancing
-    is done by sampling with replacement when the training set for a class
-    is < targetClassSize, and sampling without replacement when it
-    is > targetClassSize.
-    
-    Returns dfTr, dfTe, where the testFrac ratio corresponds to the splits
-    prior to balancing dfTr classes.
+    INPUTS:
+        df	        Pandas DataFrame
+        colName	        str, column whose item counts are to be histogrammed.
+        barWidth        float, fractional width of histogram bars (1.0 for no
+                        gaps), default: 0.90
+        figSz	        tuple (type=float), size of figure in inches, default:
+                        (16.0, 10.0)
+        xrot	        float, angle by which column values are rotated
+                        (x-axis), default: 65.0
+        titleText	str, title for plot
+        ax		optional matplotlib.axis object, default: None
+        saveAs	str, in ['pdf', 'png', 'svg']
     """
 
-    if volubility > 0:
-        print(f"df.shape: {df.shape}")
+    classCts = pd.DataFrame(df[colName].value_counts())
 
-    labels = list(set(df[classColumn]))
-    if volubility > 1:
-        print(f"labels: {labels}")
+    if ax is None:
+        ax = classCts.plot(kind='bar', width=barWidth, figsize=figSz, rot=xrot)
+    else:
+        classCts.plot(kind='bar', width=barWidth, figsize=figSz,
+                      rot=xrot, ax=ax)
 
-    # Create a RandomState object to feed into each randomizing call:
-    myRandomState = np.random.RandomState(randomState)
+    rects = ax.patches
 
-    for i, label in enumerate(labels):
-        dfLabel = df[df[classColumn]==label]
-        if volubility > 1:
-            print(f"dfLabel.shape: {dfLabel.shape}")
+    # Number of points between bar and label. Change to your liking.
+    spac=e = 5
 
-        dfLabelTr, dfLabelTe = \
-          train_test_split(dfLabel, test_size=testFrac,
-                           random_state=myRandomState)
-        if volubility > 1:
-            print(f"dfLabelTr.shape: {dfLabelTr.shape}\tdfLabelTe.shape: "
-                  f"{dfLabelTe.shape}")
+    # Vertical alignment for positive values
+    va = 'bottom'
 
-        ct = dfLabelTe.shape[0]
-        if i == 0:
-            dfTe = dfLabelTe
-            if ct < targetClassSize:
-                dfTr = dfLabelTr.sample(n=targetClassSize, replace=True,
-                                        random_state=myRandomState)
-            elif ct > targetClassSize:
-                dfTr = dfLabelTr.sample(n=targetClassSize, replace=False,
-                                        random_state=myRandomState)
-            else:
-                dfTr = dfLabelTr
+    # For each bar: Place a label
+    for rect in rects:
+        # Get X and Y placement of label from rect.
+        y_value = rect.get_height()
+        x_value = rect.get_x() + rect.get_width() / 2
+
+        # If value of bar is negative: Place label below bar
+        if y_value < 0:
+            # Invert space to place label below
+            space *= -1
+            # Vertically align label at top
+            va = "top"
         else:
-            dfTe = pd.concat([dfTe, dfLabelTe])
-            if ct < targetClassSize:
-                dfTr = pd.concat([dfTr,
-                                  dfLabelTr.sample(n=targetClassSize,
-                                                   replace=True,
-                                                   random_state=myRandomState)])
-            elif ct > targetClassSize:
-                dfTr = pd.concat([dfTr,
-                                  dfLabelTr.sample(n=targetClassSize,
-                                                   replace=False,
-                                                   random_state=myRandomState)])
-            else:
-                dfTr = pd.concat([dfTr, dfLabelTr])
+            va = "bottom"
 
-    if volubility > 1:
-        print(f"type(dfTr): {type(dfTr)}\ttype(dfTe): {type(dfTe)}")
-    if volubility > 0:
-        print(f"dfTr.shape: {dfTr.shape}\tdfTe.shape: {dfTe.shape}")
+        # Use Y value as label and format number with one decimal place
+        label = "{:d}".format(y_value)
 
-    if randomizeResult:
-        dfTr = dfTr.sample(frac=1, random_state=myRandomState).reset_index(drop=True)
-        dfTe = dfTe.sample(frac=1, random_state=myRandomState).reset_index(drop=True)
-    return dfTr, dfTe
+        # Create annotation
+        plt.annotate(
+            label,                      # Use `label` as label
+            (x_value, y_value),         # Place label at end of the bar
+            rotation=90.0,
+            xytext=(0, space),          # Vertically shift label by `space`
+            textcoords="offset points", # Interpret `xytext` as offset in points
+            ha="center",                # Horizontally center label
+            va=va)                      # Vertically align label differently for
+                                        # positive and negative values.
+
+    ax.set_ylim([0.0, 187500.0])
+    if titleText is not None:
+        ax.set_title(titleText)
+        fileNameAugmentString = "".join([w.lstrip('(').rstrip(')')
+                                         .capitalize() for w in \
+                                         titleText.split(" ")])
+    else:
+        fileNameAugmentString = ""
+
+    if saveAs == 'pdf':
+        plt.savefig("".join([colName + ' frequencies', name,
+                             fileNameAugmentString, '.pdf']))
+    elif saveAs == 'png':
+        plt.savefig("".join([colName + ' frequencies', name,
+                             fileNameAugmentString, '.png']))
+    elif saveAs == 'svg':
+        plt.savefig("".join([colName + ' frequencies', name,
+                             fileNameAugmentString, '.svg']))
+
+    return
