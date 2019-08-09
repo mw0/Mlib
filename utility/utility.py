@@ -1,6 +1,7 @@
 import timeit
 import numpy as np
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 def timeUsage(func):
 
@@ -26,11 +27,11 @@ def timeUsage(func):
 
 @timeUsage
 def splitDataFrameByClasses(df, classColumn, testFrac=0.33, volubility=1,
-                            randomizeResult=True, randomState=None):
+                            randomizeResult=True, myRandomState=None):
     """
-    Conducts train/test splits of df separately for each class, and then concatenates
-    them together.
-    
+    Conducts train/test splits of df separately for each class, and then
+    concatenates them together.
+
     Returns dfTrain, dfTest.
     """
 
@@ -41,9 +42,12 @@ def splitDataFrameByClasses(df, classColumn, testFrac=0.33, volubility=1,
     if volubility > 1:
         print(f"labels: {labels}")
 
-    # Create a RandomState object to feed into each randomizing call:
-    if isinstance(randomState, int):
-        randomState = np.random.RandomState(randomState)
+    # If not passed, create a RandomState object to feed into each
+    # randomizing call:
+    if myRandomState is None:
+        myRandomState = np.random.RandomState(21)
+    elif isinstance(myRandomState, int):
+        myRandomState = np.random.RandomState(myRandomState)
 
     for i, label in enumerate(labels):
         dfLabel = df[df[classColumn]==label]
@@ -51,9 +55,11 @@ def splitDataFrameByClasses(df, classColumn, testFrac=0.33, volubility=1,
             print(f"dfLabel.shape: {dfLabel.shape}")
 
         dfLabelTrain, dfLabelTest = \
-          train_test_split(dfLabel, test_size=testFrac, random_state=randomState)
+          train_test_split(dfLabel, test_size=testFrac,
+                           random_state=myRandomState)
         if volubility > 1:
-            print(f"dfLabelTr.shape: {dfLabelTr.shape}\tdfLabelTe.shape: {dfLabelTe.shape}")
+            print(f"dfLabelTr.shape: {dfLabelTr.shape}"
+                  f"\tdfLabelTe.shape: {dfLabelTe.shape}")
 
         if i == 0:
             dfTest = dfLabelTest
@@ -66,15 +72,17 @@ def splitDataFrameByClasses(df, classColumn, testFrac=0.33, volubility=1,
         print(f"dfTrain.shape: {dfTrain.shape}\tdfTest.shape: {dfTest.shape}")
 
     if randomizeResult:
-        dfTrain = dfTrain.sample(frac=1, random_state=randomState).reset_index(drop=True)
-        dfTest = dfTest.sample(frac=1, random_state=randomState).reset_index(drop=True)
+        dfTrain = dfTrain.sample(frac=1, random_state=myRandomState)\
+                         .reset_index(drop=True)
+        dfTest = dfTest.sample(frac=1, random_state=myRandomState)\
+                       .reset_index(drop=True)
     return dfTrain, dfTest
 
 
 @timeUsage
-def splitBalancedDataFrameClasses(df, classColumn, targetClassSize,
-                                  testFrac=0.33, randomizeResult=True,
-                                  randomState=None, volubility=1):
+def splitBalanceDataFrameByClasses(df, classColumn, targetClassSize,
+                                   testFrac=0.33, randomizeResult=True,
+                                   myRandomState=None, volubility=1):
     """
     Conducts train/test splits of df separately for each class, then balances
     the classes of the training splits, and concatentates together. Balancing
@@ -93,8 +101,13 @@ def splitBalancedDataFrameClasses(df, classColumn, targetClassSize,
     if volubility > 1:
         print(f"labels: {labels}")
 
-    # Create a RandomState object to feed into each randomizing call:
-    myRandomState = np.random.RandomState(randomState)
+
+    # If not passed, create a RandomState object to feed into each randomizing
+    # call:
+    if myRandomState is None:
+        myRandomState = np.random.RandomState(21)
+    elif isinstance(myRandomState, int):
+        myRandomState = np.random.RandomState(myRandomState)
 
     for i, label in enumerate(labels):
         dfLabel = df[df[classColumn]==label]
@@ -110,36 +123,44 @@ def splitBalancedDataFrameClasses(df, classColumn, targetClassSize,
 
         ct = dfLabelTe.shape[0]
         if i == 0:
-            dfTe = dfLabelTe
+            dfTest = dfLabelTe
             if ct < targetClassSize:
-                dfTr = dfLabelTr.sample(n=targetClassSize, replace=True,
-                                        random_state=myRandomState)
+                dfTrain = dfLabelTr.sample(n=targetClassSize, replace=True,
+                                           random_state=myRandomState)
             elif ct > targetClassSize:
-                dfTr = dfLabelTr.sample(n=targetClassSize, replace=False,
-                                        random_state=myRandomState)
+                dfTrain = dfLabelTr.sample(n=targetClassSize, replace=False,
+                                           random_state=myRandomState)
             else:
-                dfTr = dfLabelTr
+                dfTrain = dfLabelTr
         else:
-            dfTe = pd.concat([dfTe, dfLabelTe])
+            dfTest = pd.concat([dfTest, dfLabelTe])
             if ct < targetClassSize:
-                dfTr = pd.concat([dfTr,
-                                  dfLabelTr.sample(n=targetClassSize,
-                                                   replace=True,
-                                                   random_state=myRandomState)])
+                dfTrain = pd.concat([dfTrain,
+                                     dfLabelTr.sample(n=targetClassSize,
+                                                  replace=True,
+                                                  random_state=myRandomState)])
             elif ct > targetClassSize:
-                dfTr = pd.concat([dfTr,
-                                  dfLabelTr.sample(n=targetClassSize,
-                                                   replace=False,
-                                                   random_state=myRandomState)])
+                dfTrain = pd.concat([dfTrain,
+                                     dfLabelTr.sample(n=targetClassSize,
+                                                  replace=False,
+                                                  random_state=myRandomState)])
             else:
-                dfTr = pd.concat([dfTr, dfLabelTr])
+                dfTrain = pd.concat([dfTrain, dfLabelTr])
 
     if volubility > 1:
-        print(f"type(dfTr): {type(dfTr)}\ttype(dfTe): {type(dfTe)}")
+        print(f"type(dfTrain): {type(dfTrain)}"
+              f"\ttype(dfTest): {type(dfTest)}")
     if volubility > 0:
-        print(f"dfTr.shape: {dfTr.shape}\tdfTe.shape: {dfTe.shape}")
+        print(f"dfTrain.shape: {dfTrain.shape}"
+              f"\tdfTest.shape: {dfTest.shape}")
 
     if randomizeResult:
-        dfTr = dfTr.sample(frac=1, random_state=myRandomState).reset_index(drop=True)
-        dfTe = dfTe.sample(frac=1, random_state=myRandomState).reset_index(drop=True)
-    return dfTr, dfTe
+        dfTrain = dfTrain.sample(frac=1, random_state=myRandomState)\
+                         .reset_index(drop=True)
+        dfTest = dfTest.sample(frac=1, random_state=myRandomState)\
+                       .reset_index(drop=True)
+    return dfTrain, dfTest
+
+
+# @timeUsage
+# def 
