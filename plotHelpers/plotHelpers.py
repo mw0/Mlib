@@ -8,12 +8,21 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import colorcet as cc
 
-### decorator for timing functions.
+### Decorator for timing functions.
 def timeUsage(func):
+    """
+    INPUT:
+        func	obj, function you want timed
+
+    This is a decorator that prints out the duration of execution for a
+    function. Formats differ for cases < 1 min, < 1 hour and >= 1 hour.
+    """
 
     def wrapper(*args, **kwargs):
         t0 = timeit.default_timer()
+
         retval= func(*args, **kwargs)
+
         t1 = timeit.default_timer()
         Δt = t1 - t0
         if Δt > 86400.0:
@@ -77,9 +86,10 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
                             confusionMat.sum(axis=0)[np.newaxis, :])
 
     if titleText is not None:
-        fileNameAugmentString = "".join([w.replace('/', '').lstrip('(')
-                                         .rstrip(')').capitalize() for w in \
-                                         titleText.split(" ")])
+        fileNameAugmentString = "".join([w.replace("/", '').replace("'", '')
+                                         .lstrip('(').rstrip(')').capitalize()\
+                                         for w in titleText.split(" ")])\
+                                  .rstrip('.')
     else:
         fileNameAugmentString = ""
 
@@ -171,9 +181,10 @@ def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
     ax.set_ylim([0.0, 187500.0])
     if titleText is not None:
         ax.set_title(titleText)
-        fileNameAugmentString = "".join([w.replace('/', '').lstrip('(')
-                                         .rstrip(')').capitalize() for w in \
-                                         titleText.split(" ")])
+        fileNameAugmentString = "".join([w.replace("/", '').replace("'", '')
+                                         .lstrip('(').rstrip(')').capitalize()\
+                                         for w in titleText.split(" ")])\
+                                  .rstrip('.')
     else:
         fileNameAugmentString = ""
 
