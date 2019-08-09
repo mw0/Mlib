@@ -45,3 +45,15 @@ def testPlotConfusionMatrix():
     expectedMD5 = '856ce3eb6edeb5b28b617e41e91ca16e'
 
     assert expectedMD5 == actualMD5
+
+    plotConfusionMatrix(confusionMatrix, xlabels=xlabels, ylabels=ylabels,
+                        titleText=titleText, type='precision', saveAs='png')
+
+    fileName = 'ConfusionMatrixPrecisionItsABunchOfBunkcrapola.png'
+    with open(fileName, 'rb') as veriFile:
+        datums = veriFile.read()
+        actualMD5 = hashlib.md5(datums).hexdigest()
+
+    expectedMD5 = '982159b8c3422514c557f65ce3b0b273'
+
+    assert expectedMD5 == actualMD5

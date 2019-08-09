@@ -8,7 +8,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import colorcet as cc
 
-### Decorator for timing functions.
+
+# Decorator for timing functions.
 def timeUsage(func):
     """
     INPUT:
@@ -21,7 +22,7 @@ def timeUsage(func):
     def wrapper(*args, **kwargs):
         t0 = timeit.default_timer()
 
-        retval= func(*args, **kwargs)
+        retval = func(*args, **kwargs)
 
         t1 = timeit.default_timer()
         Δt = t1 - t0
@@ -37,7 +38,7 @@ def timeUsage(func):
             print(f"Δt: {Δt % 60.0:5.2f}s.")
         return retval
 
-    return wrapper 
+    return wrapper
 
 
 @timeUsage
@@ -46,7 +47,7 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
                         saveAs=None):
     """
     INPUTS:
-        confustionMat	np.array (square, floats), containing 
+        confustionMat	np.array (square, floats), containing confusion matrix
         xlabels		list (type=str), containing labels for predict
         ylabels		list (type=str), containing labels for actual
         type		str, in ['counts', 'recall', 'precision'], indicating
@@ -76,25 +77,25 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
         np.set_printoptions(precision=2)
         name = 'Recall'
         fmtType = '0.2f'
-        confusionMatNorm = (confusionMat.astype('float')/
+        confusionMatNorm = (confusionMat.astype('float') /
                             confusionMat.sum(axis=1)[:, np.newaxis])
     elif type == 'precision':
         np.set_printoptions(precision=2)
         name = 'Precision'
         fmtType = '0.2f'
-        confusionMatNorm = (confusionMat.astype('float')/
+        confusionMatNorm = (confusionMat.astype('float') /
                             confusionMat.sum(axis=0)[np.newaxis, :])
 
     if titleText is not None:
         fileNameAugmentString = "".join([w.replace("/", '').replace("'", '')
-                                         .lstrip('(').rstrip(')').capitalize()\
+                                         .lstrip('(').rstrip(')').capitalize()
                                          for w in titleText.split(" ")])\
                                   .rstrip('.')
     else:
         fileNameAugmentString = ""
 
     if ax is None:
-        fig, ax = plt.subplots(figsize=(30,25))
+        fig, ax = plt.subplots(figsize=(30, 25))
     sns.heatmap(confusionMatNorm, annot=True, fmt=fmtType, cmap=cc.cm.rainbow,
                 xticklabels=xlabels, yticklabels=ylabels)
     plt.ylabel('Actual', fontsize=15)
@@ -169,20 +170,19 @@ def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
 
         # Create annotation
         plt.annotate(
-            label,                      # Use `label` as label
-            (x_value, y_value),         # Place label at end of the bar
+            label,                       # Use `label` as label
+            (x_value, y_value),          # Place label at end of the bar
             rotation=90.0,
-            xytext=(0, space),          # Vertically shift label by `space`
-            textcoords="offset points", # Interpret `xytext` as offset in points
-            ha="center",                # Horizontally center label
-            va=va)                      # Vertically align label differently for
-                                        # positive and negative values.
+            xytext=(0, space),           # Vertically shift label by `space`
+            textcoords="offset points",  # Interpret `xytext` as offset, points
+            ha="center",                 # Horizontally center label
+            va=va)                       # Vertically align for top or bottom
 
     ax.set_ylim([0.0, 187500.0])
     if titleText is not None:
         ax.set_title(titleText)
         fileNameAugmentString = "".join([w.replace("/", '').replace("'", '')
-                                         .lstrip('(').rstrip(')').capitalize()\
+                                         .lstrip('(').rstrip(')').capitalize()
                                          for w in titleText.split(" ")])\
                                   .rstrip('.')
     else:
