@@ -64,19 +64,21 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
         fmtType = 'd'
         confusionMatNorm = confusionMat.copy()
     elif type == 'recall':
+        np.set_printoptions(precision=2)
         name = 'Recall'
         fmtType = '0.2f'
         confusionMatNorm = (confusionMat.astype('float')/
                             confusionMat.sum(axis=1)[:, np.newaxis])
     elif type == 'precision':
+        np.set_printoptions(precision=2)
         name = 'Precision'
         fmtType = '0.2f'
         confusionMatNorm = (confusionMat.astype('float')/
                             confusionMat.sum(axis=0)[np.newaxis, :])
 
     if titleText is not None:
-        fileNameAugmentString = "".join([w.lstrip('(').rstrip(')')
-                                         .capitalize() for w in \
+        fileNameAugmentString = "".join([w.replace('/', '').lstrip('(')
+                                         .rstrip(')').capitalize() for w in \
                                          titleText.split(" ")])
     else:
         fileNameAugmentString = ""
@@ -87,7 +89,8 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
                 xticklabels=xlabels, yticklabels=ylabels)
     plt.ylabel('Actual', fontsize=15)
     plt.xlabel('Predicted', fontsize=15)
-    plt.title(", ".join(['Confusion matrix', name, titleText]), fontsize=18)
+    plt.suptitle(", ".join(['Confusion matrix', name, titleText]), fontsize=18)
+    plt.tight_layout(rect=[0.0, 0.03, 1.0, 0.97])
 
     if saveAs == 'pdf':
         plt.savefig("".join(['ConfusionMatrix', name,
@@ -131,7 +134,7 @@ def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
     rects = ax.patches
 
     # Number of points between bar and label. Change to your liking.
-    spac=e = 5
+    space = 5
 
     # Vertical alignment for positive values
     va = 'bottom'
@@ -168,20 +171,20 @@ def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
     ax.set_ylim([0.0, 187500.0])
     if titleText is not None:
         ax.set_title(titleText)
-        fileNameAugmentString = "".join([w.lstrip('(').rstrip(')')
-                                         .capitalize() for w in \
+        fileNameAugmentString = "".join([w.replace('/', '').lstrip('(')
+                                         .rstrip(')').capitalize() for w in \
                                          titleText.split(" ")])
     else:
         fileNameAugmentString = ""
 
     if saveAs == 'pdf':
-        plt.savefig("".join([colName + ' frequencies', name,
+        plt.savefig("".join([colName + ' frequencies',
                              fileNameAugmentString, '.pdf']))
     elif saveAs == 'png':
-        plt.savefig("".join([colName + ' frequencies', name,
+        plt.savefig("".join([colName + ' frequencies',
                              fileNameAugmentString, '.png']))
     elif saveAs == 'svg':
-        plt.savefig("".join([colName + ' frequencies', name,
+        plt.savefig("".join([colName + ' frequencies',
                              fileNameAugmentString, '.svg']))
 
     return
