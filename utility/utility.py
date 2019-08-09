@@ -5,6 +5,8 @@ from pathlib import Path
 import pickle
 from sklearn.model_selection import train_test_split
 
+
+# decorator for timing functions.
 def timeUsage(func):
     """
     INPUT:
@@ -17,14 +19,16 @@ def timeUsage(func):
     def wrapper(*args, **kwargs):
         t0 = timeit.default_timer()
 
-        retval= func(*args, **kwargs)
+        retval = func(*args, **kwargs)
 
         t1 = timeit.default_timer()
         Δt = t1 - t0
         if Δt > 86400.0:
-            print(f"Δt: {Δt//86400}d, {int((Δt % 86400)//3600)}h, {int((Δt % 3600)//60)}m, {Δt % 60.0:4.1f}s.")
+            print(f"Δt: {Δt//86400}d, {int((Δt % 86400)//3600)}h, "
+                  f"{int((Δt % 3600)//60)}m, {Δt % 60.0:4.1f}s.")
         elif Δt > 3600.0:
-            print(f"Δt: {int(Δt//3600)}h, {int((Δt % 3600)//60)}m, {Δt % 60.0:4.1f}s.")
+            print(f"Δt: {int(Δt//3600)}h, {int((Δt % 3600)//60)}m, "
+                  f"{Δt % 60.0:4.1f}s.")
         elif Δt > 60.0:
             print(f"Δt: {int(Δt//60)}m, {Δt % 60.0:4.1f}s.")
         else:
@@ -59,13 +63,13 @@ def splitDataFrameByClasses(df, classColumn, testFrac=0.33, volubility=1,
         myRandomState = np.random.RandomState(myRandomState)
 
     for i, label in enumerate(labels):
-        dfLabel = df[df[classColumn]==label]
+        dfLabel = df[df[classColumn] == label]
         if volubility > 1:
             print(f"dfLabel.shape: {dfLabel.shape}")
 
         dfLabelTrain, dfLabelTest = \
-          train_test_split(dfLabel, test_size=testFrac,
-                           random_state=myRandomState)
+            train_test_split(dfLabel, test_size=testFrac,
+                             random_state=myRandomState)
         if volubility > 1:
             print(f"dfLabelTr.shape: {dfLabelTr.shape}"
                   f"\tdfLabelTe.shape: {dfLabelTe.shape}")
@@ -98,7 +102,7 @@ def splitBalanceDataFrameByClasses(df, classColumn, targetClassSize,
     is done by sampling with replacement when the training set for a class
     is < targetClassSize, and sampling without replacement when it
     is > targetClassSize.
-    
+
     Returns dfTr, dfTe, where the testFrac ratio corresponds to the splits
     prior to balancing dfTr classes.
     """
@@ -110,7 +114,6 @@ def splitBalanceDataFrameByClasses(df, classColumn, targetClassSize,
     if volubility > 1:
         print(f"labels: {labels}")
 
-
     # If not passed, create a RandomState object to feed into each randomizing
     # call:
     if myRandomState is None:
@@ -119,13 +122,13 @@ def splitBalanceDataFrameByClasses(df, classColumn, targetClassSize,
         myRandomState = np.random.RandomState(myRandomState)
 
     for i, label in enumerate(labels):
-        dfLabel = df[df[classColumn]==label]
+        dfLabel = df[df[classColumn] == label]
         if volubility > 1:
             print(f"dfLabel.shape: {dfLabel.shape}")
 
         dfLabelTr, dfLabelTe = \
-          train_test_split(dfLabel, test_size=testFrac,
-                           random_state=myRandomState)
+            train_test_split(dfLabel, test_size=testFrac,
+                             random_state=myRandomState)
         if volubility > 1:
             print(f"dfLabelTr.shape: {dfLabelTr.shape}\tdfLabelTe.shape: "
                   f"{dfLabelTe.shape}")
@@ -144,15 +147,17 @@ def splitBalanceDataFrameByClasses(df, classColumn, targetClassSize,
         else:
             dfTest = pd.concat([dfTest, dfLabelTe])
             if ct < targetClassSize:
-                dfTrain = pd.concat([dfTrain,
-                                     dfLabelTr.sample(n=targetClassSize,
-                                                  replace=True,
-                                                  random_state=myRandomState)])
+                dfTrain = \
+                    pd.concat([dfTrain,
+                               dfLabelTr.sample(n=targetClassSize,
+                                                replace=True,
+                                                random_state=myRandomState)])
             elif ct > targetClassSize:
-                dfTrain = pd.concat([dfTrain,
-                                     dfLabelTr.sample(n=targetClassSize,
-                                                  replace=False,
-                                                  random_state=myRandomState)])
+                dfTrain = \
+                    pd.concat([dfTrain,
+                               dfLabelTr.sample(n=targetClassSize,
+                                                replace=False,
+                                                random_state=myRandomState)])
             else:
                 dfTrain = pd.concat([dfTrain, dfLabelTr])
 
@@ -196,7 +201,7 @@ def GloVeDict(GloVeDir, embeddingSz=200):
         print(f"Loading GloVe vectors from {GloVeFile} ...")
         with open(GloVeFile, 'rb') as pickledGloVe:
             return pickle.load(pickledGloVe)
-    else:    
+    else:
         RawGloVeFile = Path(GloVeDir) / f"glove.6B.{embeddingSz:03d}d.txt"
         print(f"{GloVeFile} does not (yet) exist.")
         print(RawGloVeFile)
