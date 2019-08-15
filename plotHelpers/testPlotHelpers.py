@@ -1,17 +1,13 @@
 from plotHelpers import *
 from time import sleep
 import hashlib
+import numpy as np
+from numpy.random import RandomState
 
 @timeUsage
 def sleeper(seconds):
     sleep(seconds)
 
-
-def testTimeUsage(capsys):
-    seconds = 2.15
-    sleeper(seconds)
-    captured = capsys.readouterr()
-    assert captured.out == "Δt:  2.15s.\n"
 
 def testPlotConfusionMatrix():
 
@@ -30,7 +26,7 @@ def testPlotConfusionMatrix():
         datums = veriFile.read()
         actualMD5 = hashlib.md5(datums).hexdigest()
 
-    expectedMD5 = '6c8b1444223e0c7e8c67a2025f78e1fa'
+    expectedMD5 = 'a53b4182d30b1c11fba08abce579b710'
 
     assert expectedMD5 == actualMD5
 
@@ -42,7 +38,7 @@ def testPlotConfusionMatrix():
         datums = veriFile.read()
         actualMD5 = hashlib.md5(datums).hexdigest()
 
-    expectedMD5 = '856ce3eb6edeb5b28b617e41e91ca16e'
+    expectedMD5 = 'f8e37ac0cf93f1d5a11eaabf68b13ef2'
 
     assert expectedMD5 == actualMD5
 
@@ -54,6 +50,32 @@ def testPlotConfusionMatrix():
         datums = veriFile.read()
         actualMD5 = hashlib.md5(datums).hexdigest()
 
-    expectedMD5 = '982159b8c3422514c557f65ce3b0b273'
+    expectedMD5 = 'a4be7e90255878e2c11705534f4668b8'
 
     assert expectedMD5 == actualMD5
+
+
+def testDetailedHistogram():
+
+    randState = RandomState(20)
+    values = randState.randint(0, 101, size=1000)
+
+    titleText = "It's a bunch of bunk/crapola."
+    detailedHistogram(values, xlabel='values', ylabel='freqs',
+                        titleText=titleText, saveAs='png')
+
+    fileName = 'DetailedHistItsABunchOfBunkcrapola.png'
+    with open(fileName, 'rb') as veriFile:
+        datums = veriFile.read()
+        actualMD5 = hashlib.md5(datums).hexdigest()
+
+    expectedMD5 = '008bef5fa5a64b01d739b1100829cbe5'
+
+    assert expectedMD5 == actualMD5
+
+
+def testTimeUsage(capsys):
+    seconds = 2.15
+    sleeper(seconds)
+    captured = capsys.readouterr()
+    assert captured.out == "Δt:  2.15s.\n"
