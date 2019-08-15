@@ -367,6 +367,8 @@ def dependencePlot(ind, shap_values, features, feature_names=None,
     """
     Create a SHAP dependence plot, colored by an interaction feature.
 
+    *Modification of dependence_plot() from shap module.*
+
     Plots the value of the feature on the x-axis and the SHAP value of the
     same feature on the y-axis. This shows how the model depends on the given
     feature, and is like a richer extenstion of the classical parital
