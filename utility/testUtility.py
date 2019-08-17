@@ -3,18 +3,6 @@ from time import sleep
 import numpy as np
 import pandas as pd
 
-@timeUsage
-def sleeper(seconds):
-    sleep(seconds)
-
-
-def testTimeUsage(capsys):
-    seconds = 2.15
-    sleeper(seconds)
-    captured = capsys.readouterr()
-    assert captured.out == "Δt:  2.15s.\n"
-
-
 def testSplitDataFrameByClasses():
 
     randState = np.random.RandomState(26)
@@ -97,7 +85,7 @@ def testSplitBalanceDataFrameByClasses():
 def testCreateGloVeDict():
 
     GloVeDir = '/home/wilber/work/GloVe'
-    GloVeDict = GloVeDict(GloVeDir, embeddingSz=50)
+    myGloVeDict = GloVeDict(GloVeDir, embeddingSz=50)
 
     expectedWomanVect = np.array([-1.8153e-01,  6.4827e-01, -5.8210e-01,
                                   -4.9451e-01,  1.5415e+00,  1.3450e+00,
@@ -117,9 +105,9 @@ def testCreateGloVeDict():
                                   -8.5223e-01, -2.3073e-01, -1.3138e+00,
                                    4.8764e-01, -1.0467e-01], dtype='float32')
 
-    assert np.array_equal(expectedWomanVect, GloVeDict['woman'])
+    assert np.array_equal(expectedWomanVect, myGloVeDict['woman'])
 
-    GloVeDict = GloVeDict(GloVeDir, embeddingSz=100)
+    myGloVeDict = GloVeDict(GloVeDir, embeddingSz=100)
 
     tmp =  [ 0.30817 ,  0.30938  ,  0.52803 , -0.92543  , -0.73671 ,
              0.63475 ,  0.44197  ,  0.10262 , -0.09142  , -0.56607 ,
@@ -143,9 +131,9 @@ def testCreateGloVeDict():
             -0.27185 , -0.6255   ,  0.12883 ,  0.62529  , -0.52086  ]
     expectedDogVect = np.array(tmp, dtype='float32')
 
-    assert np.array_equal(expectedDogVect, GloVeDict['dog'])
+    assert np.array_equal(expectedDogVect, myGloVeDict['dog'])
 
-    GloVeDict = GloVeDict(GloVeDir, embeddingSz=200)
+    myGloVeDict = GloVeDict(GloVeDir, embeddingSz=200)
 
     tmp =  [ 3.4820e-01,  5.0612e-02,  4.6200e-01,  5.0187e-01,  1.0113e+00,
              2.7263e-01, -2.7686e-01, -3.7214e-01,  1.2201e-01, -4.5424e-01,
@@ -189,4 +177,15 @@ def testCreateGloVeDict():
             -1.1054e+00,  7.2521e-02, -3.2189e-01,  4.4823e-01, -4.3356e-01]
     expectedHypothesisVect = np.array(tmp, dtype='float32')
 
-    assert np.array_equal(expectedHypothesisVect, GloVeDict['hypothesis'])
+    assert np.array_equal(expectedHypothesisVect, myGloVeDict['hypothesis'])
+
+@timeUsage
+def sleeper(seconds):
+    sleep(seconds)
+
+
+def testTimeUsage(capsys):
+    seconds = 2.15
+    sleeper(seconds)
+    captured = capsys.readouterr()
+    assert captured.out == "Δt:  2.15s.\n"
