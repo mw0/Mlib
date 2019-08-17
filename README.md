@@ -18,7 +18,10 @@ larger than a minute, larger than an hour.
 ### `plotConfusionMatrix()`
 
 Makes pretty plots of confusion matrix data.
-Especially nice: has counts, recall and precision variants. (See docstring.)
+Especially nice: has counts, recall and precision variants.
+
+When type == 'recall', normalization across predicted values ensures that diagonal elements represent recall for each class, and 'precision' normalizes across actual values so that diagonal elements represent class precisions.
+(For recall and precision, max values are 1.0.)
 
 ### `detailedHistogram()`
 
