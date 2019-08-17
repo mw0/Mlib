@@ -216,13 +216,13 @@ def detailedHistogram(data, xlabel=None, ylabel=None,
             raise ValueError("If xlim is not None, it must be set to a list "
                              "of length 2.\nYou provided: ", xlim)
         else:
-            axis.set_xlim([xlim[0], xlim[1]])
+            axis.set_xlim(xlim)
     if ylim is not None:
         if len(ylim) != 2:
             raise ValueError("If ylim is not None, it must be set to a list "
                              "of length 2.\nYou provided: ", ylim)
         else:
-            axis.set_ylim([ylim[0], ylim[1]])
+            axis.set_ylim(ylim)
 
     if xlabel is not None:
         if not isinstance(xlabel, str):
@@ -274,7 +274,8 @@ def detailedHistogram(data, xlabel=None, ylabel=None,
 
 @timeUsage
 def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
-                    xrot=65.0, titleText=None, ax=None, saveAs=None):
+                    xrot=65.0, titleText=None, ax=None, saveAs=None,
+                    xlim=None, ylim=None):
     """
     INPUTS:
         df	        Pandas DataFrame
@@ -288,6 +289,8 @@ def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
         titleText	str, title for plot
         ax		optional matplotlib.axis object, default: None
         saveAs	str, in ['pdf', 'png', 'svg']
+        xlim, ylim	list (type numeric), if not None will be used to set
+                        limits of plot.
     """
 
     classCts = pd.DataFrame(df[colName].value_counts())
@@ -334,7 +337,19 @@ def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
             ha="center",                 # Horizontally center label
             va=va)                       # Vertically align for top or bottom
 
-    ax.set_ylim([0.0, 187500.0])
+    if xlim is not None:
+        if len(xlim) < 2:
+            raise ValueError("If xlim is set it must include min and max "
+                             "values. You provided: ", xlim)
+        else:
+            ax.set_xlim(xlim)
+
+    if ylim is not None:
+        if len(ylim) < 2:
+            raise ValueError("If ylim is set it must include min and max "
+                             "values. You provided: ", ylim)
+        else:
+            ax.set_ylim(ylim)
     if titleText is not None:
         ax.set_title(titleText)
         fileNameAugmentString = "".join([w.replace("/", '').replace("'", '')
@@ -347,13 +362,13 @@ def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
         fileNameAugmentString = ""
 
     if saveAs == 'pdf':
-        plt.savefig("".join([colName + ' frequencies',
+        plt.savefig("".join([colName + 'Frequencies',
                              fileNameAugmentString, '.pdf']))
     elif saveAs == 'png':
-        plt.savefig("".join([colName + ' frequencies',
+        plt.savefig("".join([colName + 'Frequencies',
                              fileNameAugmentString, '.png']))
     elif saveAs == 'svg':
-        plt.savefig("".join([colName + ' frequencies',
+        plt.savefig("".join([colName + 'Frequencies',
                              fileNameAugmentString, '.svg']))
 
     return

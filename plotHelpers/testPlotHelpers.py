@@ -3,6 +3,7 @@ from time import sleep
 import hashlib
 import numpy as np
 from numpy.random import RandomState
+from collections import OrderedDict
 
 @timeUsage
 def sleeper(seconds):
@@ -73,6 +74,38 @@ def testDetailedHistogram():
 
     assert expectedMD5 == actualMD5
 
+
+def testPlotValueCounts():
+
+    classes = ['Ugly']*14 + ['Loathsome']*15 + ['Weensy']*16 + \
+        ['Stanky']*22 + ['Icky']*23 + ['Bad']*28 + ['Good']*31 + ['Smelly']*41
+    values = ['14']*14 + ['15']*15 + ['16']*16 + ['22']*22 + ['23']*23 + \
+        ['28']*28 + ['31']*31 + ['41']*41
+    values = [int(v) for v in values]
+
+    randState = RandomState(20)
+    randState.shuffle(values)
+    randState = RandomState(20)
+    randState.shuffle(classes)
+
+    df = pd.DataFrame({'value': values, 'class': classes})
+    print(df.head(10))
+    print(df['class'].value_counts())
+
+
+    titleText = "It's a bunch of bunk/crapola."
+    plotValueCounts(df, 'class', titleText=titleText, saveAs='png')
+
+    fileName = 'classFrequenciesItsABunchOfBunkcrapola.png'
+    with open(fileName, 'rb') as veriFile:
+        datums = veriFile.read()
+        actualMD5 = hashlib.md5(datums).hexdigest()
+
+    expectedMD5 = '9057012c6ff3049cbde4bef8b700a0f4'
+
+    assert expectedMD5 == actualMD5
+
+    
 
 def testTimeUsage(capsys):
     seconds = 2.15
