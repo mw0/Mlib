@@ -25,7 +25,7 @@ When `type == 'recall'`, normalization across predicted values ensures that diag
 When `type == 'precision'` normalizes across actual values ensures that diagonal elements represent class precisions.
 (For recall and precision, max values are 1.0.)
 
-![](ConfusionMatrixCombined5x5Example.png)
+![](plotHelpers/ConfusionMatrixCombined5x5Example.png)
 
 In the example above, the left panel is a standard confusion matrix, showing counts assigned by predictions and reality.
 
