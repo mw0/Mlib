@@ -45,7 +45,9 @@ def timeUsage(func):
 @timeUsage
 def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
                         type='counts', titleText=None, ax=None,
-                        saveAs=None):
+                        saveAs=None, xlabelFontSz=13, ylabelFontSz=13,
+                        xtickFontSz=12, ytickFontSz=12, titleFontSz=15,
+                        xtickRotate=0.0, ytickRotate=0.0):
     """
     INPUTS:
         confustionMat	np.array (square, floats), containing confusion matrix
@@ -53,7 +55,7 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
         ylabels		list (type=str), containing labels for actual
         type		str, in ['counts', 'recall', 'precision'], indicating
                         whether to plot raw counts, normalized along predicted,
-                        normalized along actual
+                        or normalized along actual
         titleText	str, title for plot
         ax		optional matplotlib.axis object, default: None
         saveAs	str, in ['pdf', 'png', 'svg']
@@ -98,14 +100,23 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
         fileNameAugmentString = ""
 
     if ax is None:
-        fig, ax = plt.subplots(figsize=(30, 25))
-    sns.heatmap(confusionMatNorm, annot=True, fmt=fmtType, cmap=cc.cm.rainbow,
-                xticklabels=xlabels, yticklabels=ylabels)
-    plt.ylabel('Actual', fontsize=15)
-    plt.xlabel('Predicted', fontsize=15)
-    plt.suptitle(", ".join(['Confusion matrix', name, titleText]), fontsize=18)
-    plt.tight_layout(rect=[0.0, 0.03, 1.0, 0.97])
-
+        # fig, axis = plt.subplots(1, 1, figsize=(30, 25))
+        fig, axis = plt.subplots(1, 1, figsize=(4.7, 5.0))
+    else:
+        axis = ax
+    axis = sns.heatmap(confusionMatNorm, annot=True, fmt=fmtType,
+                       cmap=cc.cm.rainbow,
+                       xticklabels=xlabels, yticklabels=ylabels, ax=axis)
+    axis.set_ylabel('Actual', fontsize=xlabelFontSz)
+    axis.set_xlabel('Predicted', fontsize=ylabelFontSz)
+    axis.set_title(", ".join(['Confusion matrix', name, titleText]),
+                   fontsize=titleFontSz)
+    plt.setp(axis.xaxis.get_majorticklabels(), rotation=xtickRotate,
+             fontsize=xtickFontSz)
+    plt.setp(axis.yaxis.get_majorticklabels(), rotation=ytickRotate,
+             fontsize=ytickFontSz)
+    # plt.tight_layout(rect=[0.0, 0.03, 1.0, 0.97])
+    plt.tight_layout(rect=[0.0, 0.10, 1.0, 0.90])
     if saveAs == 'pdf':
         plt.savefig("".join(['ConfusionMatrix', name,
                              fileNameAugmentString, '.pdf']))

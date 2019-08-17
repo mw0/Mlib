@@ -18,10 +18,23 @@ larger than a minute, larger than an hour.
 ### `plotConfusionMatrix()`
 
 Makes pretty plots of confusion matrix data.
+
 Especially nice: has counts, recall and precision variants.
 
-When type == 'recall', normalization across predicted values ensures that diagonal elements represent recall for each class, and 'precision' normalizes across actual values so that diagonal elements represent class precisions.
+When `type == 'recall'`, normalization across predicted values ensures that diagonal elements represent recall for each class.
+When `type == 'precision'` normalizes across actual values ensures that diagonal elements represent class precisions.
 (For recall and precision, max values are 1.0.)
+
+![](ConfusionMatrixCombined5x5Example.png)
+
+In the example above, the left panel is a standard confusion matrix, showing counts assigned by predictions and reality.
+
+Each *row* of the middle panel sums to 1.0, with the recall score in the corresponding diagonal element.
+False negative counts, where predictions fall to the left or right of the diagonal, show where recall is "leaked" to other classes. (Recall for class 'd' is 0.65, with the largest error being false predictions to class 'b'.)
+
+In the right panel *columns* sum to 1.0, with precision scores along the diagonal.
+False positive counts, above or below a diagonal, show the classes from which precision is diluted.
+(Precision of class 'a' is diluted by counts belonging mainly to classes 'd' and 'e'.)
 
 ### `detailedHistogram()`
 

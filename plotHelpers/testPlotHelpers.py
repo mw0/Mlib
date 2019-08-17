@@ -4,6 +4,7 @@ import hashlib
 import numpy as np
 from numpy.random import RandomState
 from collections import OrderedDict
+from matplotlib import __version__ as mpVersion
 
 
 @timeUsage
@@ -13,46 +14,52 @@ def sleeper(seconds):
 
 def testPlotConfusionMatrix():
 
-    confusionMatrix = np.array([[220, 12, 8],
-                                [7, 330, 15],
-                                [6, 11, 441]], dtype='int64')
+    print(f"mpVersion: {mpVersion}")
 
-    xlabels = ['a', 'b', 'c']
-    ylabels = ['a', 'b', 'c']
-    titleText = "It's a bunch of bunk/crapola."
+    confusionMatrix = np.array([[220, 12, 58, 3, 17],
+                                [7, 330, 15, 22, 5],
+                                [41, 3, 406, 8, 21],
+                                [41, 72, 36, 308, 16],
+                                [6, 11, 8, 19, 441]], dtype='int64')
+
+    print(confusionMatrix)
+    xlabels = ['a', 'b', 'c', 'd', 'e']
+    ylabels = ['a', 'b', 'c', 'd', 'e']
+    titleText = "Example 1"
+
     plotConfusionMatrix(confusionMatrix, xlabels=xlabels, ylabels=ylabels,
                         titleText=titleText, saveAs='png')
 
-    fileName = 'ConfusionMatrixCountsItsABunchOfBunkcrapola.png'
+    fileName = 'ConfusionMatrixCountsExample1.png'
     with open(fileName, 'rb') as veriFile:
         datums = veriFile.read()
         actualMD5 = hashlib.md5(datums).hexdigest()
 
-    expectedMD5 = 'a53b4182d30b1c11fba08abce579b710'
+    expectedMD5 = '7ea26d0b16cd0a72e161bb424fc641fb'
 
     assert expectedMD5 == actualMD5
 
     plotConfusionMatrix(confusionMatrix, xlabels=xlabels, ylabels=ylabels,
                         titleText=titleText, type='recall', saveAs='png')
 
-    fileName = 'ConfusionMatrixRecallItsABunchOfBunkcrapola.png'
+    fileName = 'ConfusionMatrixRecallExample1.png'
     with open(fileName, 'rb') as veriFile:
         datums = veriFile.read()
         actualMD5 = hashlib.md5(datums).hexdigest()
 
-    expectedMD5 = 'f8e37ac0cf93f1d5a11eaabf68b13ef2'
+    expectedMD5 = '3c932c1d93ad7937ad2b749e25396096'
 
     assert expectedMD5 == actualMD5
 
     plotConfusionMatrix(confusionMatrix, xlabels=xlabels, ylabels=ylabels,
                         titleText=titleText, type='precision', saveAs='png')
 
-    fileName = 'ConfusionMatrixPrecisionItsABunchOfBunkcrapola.png'
+    fileName = 'ConfusionMatrixPrecisionExample1.png'
     with open(fileName, 'rb') as veriFile:
         datums = veriFile.read()
         actualMD5 = hashlib.md5(datums).hexdigest()
 
-    expectedMD5 = 'a4be7e90255878e2c11705534f4668b8'
+    expectedMD5 = 'f16a33f98d58510df069c9016a20637c'
 
     assert expectedMD5 == actualMD5
 
@@ -61,17 +68,17 @@ def testDetailedHistogram():
 
     randState = RandomState(20)
     values = randState.randint(0, 101, size=1000)
+    titleText = "Example 1"
 
-    titleText = "It's a bunch of bunk/crapola."
     detailedHistogram(values, xlabel='values', ylabel='freqs',
                       titleText=titleText, saveAs='png')
 
-    fileName = 'DetailedHistItsABunchOfBunkcrapola.png'
+    fileName = 'DetailedHistExample1.png'
     with open(fileName, 'rb') as veriFile:
         datums = veriFile.read()
         actualMD5 = hashlib.md5(datums).hexdigest()
 
-    expectedMD5 = '008bef5fa5a64b01d739b1100829cbe5'
+    expectedMD5 = 'aeae7309070e8a71a0b31397ef9b2639'
 
     assert expectedMD5 == actualMD5
 
@@ -93,15 +100,16 @@ def testPlotValueCounts():
     print(df.head(10))
     print(df['class'].value_counts())
 
-    titleText = "It's a bunch of bunk/crapola."
+    titleText = "Example 1"
+
     plotValueCounts(df, 'class', titleText=titleText, saveAs='png')
 
-    fileName = 'classFrequenciesItsABunchOfBunkcrapola.png'
+    fileName = 'classFrequenciesExample1.png'
     with open(fileName, 'rb') as veriFile:
         datums = veriFile.read()
         actualMD5 = hashlib.md5(datums).hexdigest()
 
-    expectedMD5 = '9057012c6ff3049cbde4bef8b700a0f4'
+    expectedMD5 = 'db82217006096d6b0a8f8ef4fc0aa2ca'
 
     assert expectedMD5 == actualMD5
 
