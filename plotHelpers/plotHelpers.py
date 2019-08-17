@@ -9,6 +9,7 @@ import seaborn as sns
 import colorcet as cc
 import matplotlib.colors
 
+
 # Decorator for timing functions.
 def timeUsage(func):
     """
@@ -91,7 +92,6 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
                                          .replace(":", '').replace(",", '')
                                          .lstrip('(').rstrip(')').rstrip(',')
                                          .capitalize()
-#                                         .lstrip('(').rstrip(')').capitalize()
                                          for w in titleText.split(" ")])\
                                   .rstrip('.')
     else:
@@ -189,7 +189,6 @@ def detailedHistogram(data, xlabel=None, ylabel=None,
                                          .replace(":", '').replace(",", '')
                                          .lstrip('(').rstrip(')').rstrip(',')
                                          .capitalize()
-#                                         .lstrip('(').rstrip(')').capitalize()
                                          for w in titleText.split(" ")])\
                                   .rstrip('.')
     else:
@@ -238,13 +237,12 @@ def detailedHistogram(data, xlabel=None, ylabel=None,
         else:
             axis.set_ylabel(ylabel)
     else:
-            axis.set_ylabel('freqency')
-
+        axis.set_ylabel('freqency')
 
     if titleText is not None:
         if not isinstance(titleText, str):
-            raise ValueError("titleText is supposed to be of type str, but you "
-                             "supplied: ", titleText)
+            raise ValueError("titleText is supposed to be of type str, but you"
+                             " supplied: ", titleText)
         else:
             axis.set_title(titleText)
 
@@ -447,7 +445,7 @@ def dependencePlot(ind, shap_values, features, feature_names=None,
 
     if cmap is None:
         cmap = matplotlib.colors.red_blue
-        
+
     # create a matplotlib figure, if `ax` hasn't been specified.
     if not ax:
         figsize = (7.5, 5) if interaction_index != ind else (6, 5)
@@ -479,7 +477,7 @@ def dependencePlot(ind, shap_values, features, feature_names=None,
         features = np.reshape(features, len(features), 1)
 
     ind = convert_name(ind, shap_values, feature_names)
-    
+
     # plotting SHAP interaction values
     if len(shap_values.shape) == 3 and len(ind) == 2:
         ind1 = convert_name(ind[0], shap_values, feature_names)
@@ -566,7 +564,8 @@ def dependencePlot(ind, shap_values, features, feature_names=None,
 
     # optionally add jitter to feature values
     if x_jitter > 0:
-        if x_jitter > 1: x_jitter = 1
+        if x_jitter > 1:
+            x_jitter = 1
         xvals = xv.copy()
         if isinstance(xvals[0], float):
             xvals = xvals.astype(np.float)
@@ -575,8 +574,8 @@ def dependencePlot(ind, shap_values, features, feature_names=None,
         if len(xvals) >= 2:
             smallest_diff = np.min(np.diff(np.sort(xvals)))
             jitter_amount = x_jitter * smallest_diff
-            xv += (np.random.ranf(size = len(xv))*jitter_amount) - \
-                  (jitter_amount/2)
+            xv += ((np.random.ranf(size=len(xv))*jitter_amount) -
+                   (jitter_amount/2))
 
     # the actual scatter plot, TODO: adapt the dot_size to the number of data
     # points?
@@ -632,7 +631,7 @@ def dependencePlot(ind, shap_values, features, feature_names=None,
             xmin = np.nanmin(xv) - (xmax - np.nanmin(xv))/20
         if xmax is None or xmax == np.nanmax(xv):
             xmax = np.nanmax(xv) + (np.nanmax(xv) - xmin)/20
-        
+
         ax.set_xlim(xmin, xmax)
 
     # plot any nan feature values as tick marks along the y-axis
@@ -667,6 +666,6 @@ def dependencePlot(ind, shap_values, features, feature_names=None,
         ax.set_xticks([name_map[n] for n in xnames], xnames,
                       rotation='vertical', fontsize=11)
     if show:
-        with warnings.catch_warnings(): # ignore expected matplotlib warnings
+        with warnings.catch_warnings():  # ignore known matplotlib warnings
             warnings.simplefilter("ignore", RuntimeWarning)
             pl.show()

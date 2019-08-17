@@ -5,6 +5,7 @@ import numpy as np
 from numpy.random import RandomState
 from collections import OrderedDict
 
+
 @timeUsage
 def sleeper(seconds):
     sleep(seconds)
@@ -63,7 +64,7 @@ def testDetailedHistogram():
 
     titleText = "It's a bunch of bunk/crapola."
     detailedHistogram(values, xlabel='values', ylabel='freqs',
-                        titleText=titleText, saveAs='png')
+                      titleText=titleText, saveAs='png')
 
     fileName = 'DetailedHistItsABunchOfBunkcrapola.png'
     with open(fileName, 'rb') as veriFile:
@@ -92,7 +93,6 @@ def testPlotValueCounts():
     print(df.head(10))
     print(df['class'].value_counts())
 
-
     titleText = "It's a bunch of bunk/crapola."
     plotValueCounts(df, 'class', titleText=titleText, saveAs='png')
 
@@ -105,7 +105,6 @@ def testPlotValueCounts():
 
     assert expectedMD5 == actualMD5
 
-    
 
 def testTimeUsage(capsys):
     seconds = 2.15
