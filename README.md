@@ -17,12 +17,10 @@ larger than a minute, larger than an hour.
 
 ### `plotConfusionMatrix()`
 
-Makes pretty plots of confusion matrix data.
+Makes pretty plots of confusion matrix data, and has count (default), recall and precision variants.
 
-Especially nice: has counts, recall and precision variants.
-
-When `type == 'recall'`, normalization across predicted values ensures that diagonal elements represent recall for each class.
-When `type == 'precision'` normalizes across actual values ensures that diagonal elements represent class precisions.
+For `type == 'recall'`, normalization across predicted values ensures that diagonal elements represent recall for each class.
+For `type == 'precision'` normalization across actual values ensures that diagonal elements represent class precisions.
 (For recall and precision, max values are 1.0.)
 
 ![](plotHelpers/ConfusionMatrixCombined5x5Example.png)
@@ -30,23 +28,33 @@ When `type == 'precision'` normalizes across actual values ensures that diagonal
 In the example above, the left panel is a standard confusion matrix, showing counts assigned by predictions and reality.
 
 Each *row* of the middle panel sums to 1.0, with the recall score in the corresponding diagonal element.
-False negative counts, where predictions fall to the left or right of the diagonal, show where recall is "leaked" to other classes. (Recall for class 'd' is 0.65, with the largest error being false predictions to class 'b'.)
+False negative counts, where predictions fall to the left or right of the diagonal, identify where recall is "leaked" to other classes. (Recall for class 'd' is 0.65, with the largest error being false predictions to class 'b'.)
 
 In the right panel *columns* sum to 1.0, with precision scores along the diagonal.
-False positive counts, above or below a diagonal, show the classes from which precision is diluted.
-(Precision of class 'a' is diluted by counts belonging mainly to classes 'd' and 'e'.)
+False positive counts, above or below a diagonal element, show the classes from which precision is diluted.
+(Precision of class 'a' is diluted mainly by counts actually belonging to classes 'd' and 'e' falsely being assigned to 'a'.)
 
 ### `detailedHistogram()`
 
-Used for cases where you want a bin for each value of your data (best if integers).
+Used for cases where you want a bin for *every* value of your data (best if integers).
 
 Suppose we have an array of integer values.
 These are counted by values, and bins are constructed on the range [-0.5, max(values) + 0.5], so the frequency of every value is shown in its own bin.
+
+![](plotHelpers/WordCountsHistWordCountsMax844Mode8.png)
+
+In the example above, there are 855 bins for the count of words in summary messages (including one bin for zero words).
+Histograms with 10-100 bins would not reveal several of the gaps, nor make precisely clear where the isolated counts are.
 
 ### `plotValueCounts()`
 
 For use with Pandas.DataFrame types.
 Provide the name of a column containing a modest number of distinct values (e.g., categoricals), and this will create a bar chart showing the counts of each value. (Like a `detailedHistogram()`, except does not include 'empty' bins, and is most appropriate for categoricals.
+
+![](plotHelpers/ClassFrequencies.png)
+
+The figures created shows counts above each bar, in which case it is easy to see the vast imbalance between the 56 classes.
+
 
 ### `dependencePlot()`
 
