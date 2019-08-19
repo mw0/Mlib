@@ -12,8 +12,8 @@ This consists of three sections:
 
 ### `timeUsage()`
 
-A decorator for timing other functions. Output format adjusts for times
-larger than a minute, larger than an hour.
+A decorator for timing other functions.
+Output format adjusts for times larger than a minute, larger than an hour.
 
 ### `plotConfusionMatrix()`
 
@@ -86,5 +86,5 @@ Balancing is done by sampling *with* replacement when the *training* set for a c
 *This is especially useful for very un-balanced classes, where the statistics do not guarantee the split ratios for the smaller classes when done on the DataFrame as a whole.*
 
 Returns dfTrain, dfTest, where the testFrac ratio corresponds to the splits prior to balancing dfTr classes.
- 
+
 This should only be useful in cases where the model being trained does not have a built-in `class='balanced'` option; for such cases, use `splitDataFrameByClasses()` instead.
