@@ -4,6 +4,7 @@ import pandas as pd
 from pathlib import Path
 import pickle
 from sklearn.model_selection import train_test_split
+import scipy.sparse as sp
 
 
 # decorator for timing functions.
@@ -229,3 +230,54 @@ def GloVeDict(GloVeDir, embeddingSz=200):
             raise FileNotFoundError("Can't extract GloVe vectors from non-"
                                     f"existent raw text file, {RawGloVeFile}.")
             return 1
+
+
+def sparseUniq(spMatrix, axis=0):
+    '''
+    INPUT:
+        spMatrix	spMatrix, a sparse matrix
+        axis		int (0 or 1), indicating the dimension to be extracted,
+                        with 0 for returning rows (and their indices), and 1
+                        for returning columns, default: 0
+
+    RETURNS:
+        spUniq		sparse matrix, containing only unique rows or columns
+        inds		list of corresponding indices
+
+    Refer to https://stackoverflow.com/questions/46126840/.
+    ./get-unique-rows-from-a-scipy-sparse-matrix#52891452
+
+    Extracts sparse matrix containing only unique rows (axis=0) or columns
+    (axis=1) of spMatrix.
+    Also, returns corresponding indices of the unique rows or columns.
+
+    The returned indices can be helpful for slicing paired arrays, when
+    you want to extract the corresponding rows/columns.
+    '''
+
+    if axis == 1:
+        spMatrix = spMatrix.T
+
+    origFormat = spMatrix.getformat()
+    # print(f"origFormat: {origFormat}")
+    dt = np.dtype(spMatrix)
+    ncols = spMatrix.shape[1]
+
+    if origFormat != 'lil':
+        spMatrix = spMatrix.tolil()
+
+    _, inds = np.unique(spMatrix.data + spMatrix.rows, return_index=True)
+    rows = spMatrix.rows[inds]
+    data = spMatrix.data[inds]
+    nrows_uniq = data.shape[0]
+
+    # spMatrix.resize(nrows_uniq, ncols)
+    spMatrix = sp.lil_matrix((nrows_uniq, ncols), dtype=dt)
+    spMatrix.data = data
+    spMatrix.rows = rows
+
+    spUniq = spMatrix.asformat(origFormat)
+    if axis == 1:
+        spUniq = spUniq.T
+
+    return spUniq, inds

@@ -2,6 +2,7 @@ from utility import *
 from time import sleep
 import numpy as np
 import pandas as pd
+import scipy.sparse as sp
 
 
 def testSplitDataFrameByClasses():
@@ -179,6 +180,57 @@ def testCreateGloVeDict():
     expectedHypothesisVect = np.array(tmp, dtype='float32')
 
     assert np.array_equal(expectedHypothesisVect, myGloVeDict['hypothesis'])
+
+
+def testSparseUniq():
+
+    a = np.array([[0, 5, 0, 0, 8, 0, 4, 0, 0, 8, 7, 0, 0, 0, 5],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [9, 2, 0, 2, 0, 0, 0, 0, 4, 0, 0, 9, 8, 2, 2],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 8, 0, 0, 2, 2, 4, 0, 0, 0, 7, 8, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 7, 0, 9, 7, 0, 0, 0, 9, 12, 0, 0, 0, 0],
+                  [9, 2, 0, 2, 0, 0, 0, 0, 4, 0, 0, 9, 8, 2, 2]])
+
+    spM = sp.coo_matrix(a)
+    origFormat = spM.getformat()
+    print(f"spM's origFormat: {origFormat}")
+
+    spU, inds = sparseUniq(spM)
+    origFormat = spU.getformat()
+    print(f"spU's origFormat: {origFormat}")
+
+    spActual = spU.todense()
+    spExpected = \
+        np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 5, 0, 0, 8, 0, 4, 0, 0, 8, 7, 0, 0, 0, 5],
+                  [0, 0, 7, 0, 9, 7, 0, 0, 0, 9, 12, 0, 0, 0, 0],
+                  [0, 0, 0, 8, 0, 0, 2, 2, 4, 0, 0, 0, 7, 8, 0],
+                  [9, 2, 0, 2, 0, 0, 0, 0, 4, 0, 0, 9, 8, 2, 2]])
+    iExpected = np.array([1, 0, 7, 5, 2])
+
+    assert np.array_equal(spActual, spExpected)
+    assert np.array_equal(inds, iExpected)
+
+    spU, inds = sparseUniq(spM, axis=1)
+
+    spActual = spU.todense()
+    spExpected = \
+        np.array([[0, 0, 4, 0, 5, 0, 7, 0, 8, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 2, 0, 4, 2, 0, 0, 8, 0, 9],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [2, 8, 2, 4, 0, 0, 0, 7, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 7, 12, 0, 9, 0],
+                  [0, 2, 0, 4, 2, 0, 0, 8, 0, 9]])
+    iExpected = np.array([7, 3, 6, 8, 1, 2, 10, 12, 4, 0])
+
+    assert np.array_equal(spActual, spExpected)
+    assert np.array_equal(inds, iExpected)
 
 
 @timeUsage
