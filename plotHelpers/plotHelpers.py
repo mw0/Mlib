@@ -2,6 +2,7 @@
 
 # from sklearn.metrics import confusion_matrix
 import timeit
+import re
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -90,12 +91,19 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
                             confusionMat.sum(axis=0)[np.newaxis, :])
 
     if titleText is not None:
-        fileNameAugmentString = "".join([w.replace("/", '').replace("'", '')
-                                         .replace(":", '').replace(",", '')
+        titleWords = titleText.split(" ")
+        regexSubs = r"[/'\":,\\\/\(\)\[\]\!\—\–\-\.]"
+        fileNameAugmentString = "".join([re.sub(regexSubs, '', w)
                                          .lstrip('(').rstrip(')').rstrip(',')
-                                         .capitalize()
-                                         for w in titleText.split(" ")])\
-                                  .rstrip('.')
+                                         .lstrip(',').capitalize()
+                                         for w in titleWords])
+        print("fileNameAugmentString:\n", fileNameAugmentString)
+        # fileNameAugmentString = "".join([w.replace("/", '').replace("'", '')
+        #                                  .replace(":", '').replace(",", '')
+        #                                  .lstrip('(').rstrip(')').rstrip(',')
+        #                                  .capitalize()
+        #                                  for w in titleText.split(" ")])\
+        #                           .rstrip('.')
     else:
         fileNameAugmentString = ""
 
@@ -196,12 +204,13 @@ def detailedHistogram(data, xlabel=None, ylabel=None,
     if titleText is not None:
         if volubility > 2:
             print("titleText.split(" "):\n", titleText.split(" "))
-        fileNameAugmentString = "".join([w.replace("/", '').replace("'", '')
-                                         .replace(":", '').replace(",", '')
+        titleWords = titleText.split(" ")
+        regexSubs = r"[/'\":,\\\/\(\)\[\]\!\—\–\-\.]"
+        fileNameAugmentString = "".join([re.sub(regexSubs, '', w)
                                          .lstrip('(').rstrip(')').rstrip(',')
-                                         .capitalize()
-                                         for w in titleText.split(" ")])\
-                                  .rstrip('.')
+                                         .lstrip(',').capitalize()
+                                         for w in titleWords])
+        print("fileNameAugmentString:\n", fileNameAugmentString)
     else:
         fileNameAugmentString = ""
     if volubility > 2:
@@ -361,12 +370,13 @@ def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
             ax.set_ylim(ylim)
     if titleText is not None:
         ax.set_title(titleText)
-        fileNameAugmentString = "".join([w.replace("/", '').replace("'", '')
-                                         .replace(":", '').replace(",", '')
+        titleWords = titleText.split(" ")
+        regexSubs = r"[/'\":,\\\/\(\)\[\]\!\—\–\-\.]"
+        fileNameAugmentString = "".join([re.sub(regexSubs, '', w)
                                          .lstrip('(').rstrip(')').rstrip(',')
-                                         .capitalize()
-                                         for w in titleText.split(" ")])\
-                                  .rstrip('.')
+                                         .lstrip(',').capitalize()
+                                         for w in titleWords])
+        print("fileNameAugmentString:\n", fileNameAugmentString)
     else:
         fileNameAugmentString = ""
 
