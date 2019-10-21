@@ -14,7 +14,8 @@ def timeUsage(func):
         func	obj, function you want timed
 
     This is a decorator that prints out the duration of execution for a
-    function. Formats differ for cases < 1 min, < 1 hour and >= 1 hour.
+    function. Formats differ for cases < 1 min, < 1 hour and < 1 day and
+    >= 1 day.
     """
 
     def wrapper(*args, **kwargs):
