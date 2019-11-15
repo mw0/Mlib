@@ -44,8 +44,9 @@ def timeUsage(func):
 
 @timeUsage
 def moveValidationSubsets(classDirs, headDir='./data', trainDir='train',
-                          validationDir='validation', frac=0.20,
-                          test=False):
+                          validationDir='validation', testDir=None,
+                          validateFrac=0.20, testFrac=None, fileSuffix='jpg',
+                          testOnly=False):
     """
     INPUT:
         classDirs	list(type=str), list of sub-directories, one for each
@@ -54,9 +55,15 @@ def moveValidationSubsets(classDirs, headDir='./data', trainDir='train',
         headDir		str, path to directory containing all training and
                         test data, default: './data'
         trainDir	str, default: 'train'
+        testDir		str, default: None
         validationDir	str, default: 'validation'
-        frac		float, default: 0.20
-        test		bool, set True if only want to generate names of files
+        validateFrac	float, fraction of files to be moved to validation
+                        subdirectories, default: 0.20
+        testFrac	float, fraction of files to be moved to validation
+                        subdirectories, default: None. If not None, testDir
+                        must also be set to a str != None.
+        fileSuffix	str, indicating type of image file, default: 'jpg'
+        testOnly	bool, set True if only want to generate names of files
                         that would be moved into each validation sub-directory.
                         No files will actually be moved. Default: False
 
@@ -68,47 +75,140 @@ def moveValidationSubsets(classDirs, headDir='./data', trainDir='train',
 
     This routine assumes that all train data have been put into sub-directories
     indicated by classDirs, under {headDir}/{trainDir}.
-    Randomly selects a proportion frac of files from each {trainDir}/{classDir}
-    and puts them into the corresponding {headDir}/{validationDir}/{classDir}.
+    Randomly selects a proportion validationFrac of files from each
+    {trainDir}/{classDir} and puts them into the corresponding
+    {headDir}/{validationDir}/{classDir}. If testFrac is not None, will put
+    testFrac of files from each {trainDir}/{classDir} into the corresponding
+    {headDir}/{testDir}/{classDir}.
     """
+
+    if (testFrac is not None) and (testFrac > 0.0) and testDir is None:
+        raise ValueError(f"You have testFrac={testFrac}. When not None, "
+                         "you must specify a non-None testDir value.")
 
     head = Path(headDir)
     train = head / trainDir
-    validation = head / validationDir
-    if not validation.is_dir():
-        validation.mkdir()
+    validate = head / validationDir
+    if not validate.is_dir():
+        validate.mkdir()
+    if testFrac is not None:
+        testing = head / testDir
+        if not testing.is_dir():
+            testing.mkdir()
 
     trainors = OrderedDict()
     validators = OrderedDict()
+    if testFrac is not None:
+        testors = OrderedDict()
+
+    # If validationDir / classDir not empty, put the files back into
+    # trainDir / classDir, so that the random selections & moves are done from
+    # scratch.
+
+    mvCts = {}
     for classDir in classDirs:
-        currentSubdir = train / classDir
-        totCt = len(list(currentSubdir.glob('*.jpg')))
+        trainSubdir = train / classDir
+        validateSubdir = validate / classDir
+        filePaths = list(validateSubdir.glob('*.' + fileSuffix))
+        totCt = len(filePaths)
+        if totCt > 0:
+            print(f"Moving {totCt} files from {validateSubdir}"
+                  f" to {trainSubdir}.")
+            for path in filePaths:
+                file = path.name
+                if mvCts.get(classDir, None) is None:
+                    mvCts[classDir] = 1
+                else:
+                    mvCts[classDir] += 1
+                destPath = trainSubdir / file
+                path.rename(destPath)
+
+    print(mvCts.keys())
+    for className in mvCts.keys():
+        trainSubdir = train / classDir
+        validateSubdir = validate / classDir
+        print(f"Moved {mvCts[className]} files from {validateSubdir} to "
+              f"{trainSubdir}.")
+
+    if testFrac is not None:
+        mvCts = {}
+        for classDir in classDirs:
+            trainSubdir = train / classDir
+            testSubdir = testing / classDir
+            filePaths = list(testSubdir.glob('*.' + fileSuffix))
+            totCt = len(filePaths)
+            if totCt > 0:
+                print(f"Moving {totCt} files from {testSubdir}"
+                      f" to {trainSubdir}.")
+                for path in filePaths:
+                    # print(f"path: {path}")
+                    file = path.name
+                    if mvCts.get(classDir, None) is None:
+                        mvCts[classDir] = 1
+                    else:
+                        mvCts[classDir] += 1
+                    destPath = trainSubdir / file
+                    path.rename(destPath)
+
+        print(mvCts.keys())
+        for className in mvCts.keys():
+            trainSubdir = train / classDir
+            testSubdir = testing / classDir
+            print(f"Moved {mvCts[className]} files from {testSubdir} to "
+                  f"{trainSubdir}.")
+
+    for classDir in classDirs:
+        trainSubdir = train / classDir
+        totCt = len(list(trainSubdir.glob('*.' + fileSuffix)))
         if totCt <= 0:
-            raise Exception(f"No files in {currentSubdir}; perhaps you haven't"
+            raise Exception(f"No files in {trainSubdir}; perhaps you haven't"
                   " yet moved your files there?")
-        validationSubdir = validation / classDir
-        # if not os.path.isdir(validationSubdir):
+
+        validationSubdir = validate / classDir
         if not validationSubdir.is_dir():
             print(f"Path {validationSubdir} does not exist -- creating ...")
             validationSubdir.mkdir()
             if not validationSubdir.is_dir():
                 raise Exception(f"Unable to create {validationSubdir}.")
-        validationSubdirCt = len(list(validationSubdir.glob('*.jpg')))
+        validationSubdirCt = len(list(validationSubdir.glob('*.' + fileSuffix)))
         if validationSubdirCt > 0:
             raise Exception(f"There are already {validationSubdirCt} files in "
                         f"{validationSubdir}. You should figure out why before"
                         " attempting to re-run this.")
 
-        for path in currentSubdir.glob('*.jpg'):
+        if testFrac is not None:
+            testSubdir = testing / classDir
+            if not testSubdir.is_dir():
+                print(f"Path {testSubdir} does not exist -- creating ...")
+                testSubdir.mkdir()
+                if not testSubdir.is_dir():
+                    raise Exception(f"Unable to create {testSubdir}.")
+            testSubdirCt = len(list(testSubdir.glob('*.' + fileSuffix)))
+            if testSubdirCt > 0:
+                print(list(testSubdir.glob('*.' + fileSuffix)))
+                raise Exception(f"There are already {testSubdirCt} files in "
+                                f"{testSubdir}. You should figure out why"
+                                " before attempting to re-run this.")
+
+        for path in trainSubdir.glob('*.' + fileSuffix):
             file = path.name
             r = random()
-            if r < frac:
+            if r < validateFrac:
                 if validators.get(classDir, None) is None:
                     validators[classDir] = [file]
                 else:
                     validators[classDir].append(file)
-                if test is False:
+                if testOnly is False:
                     destPath = validationSubdir / file
+                    path.rename(destPath)
+
+            elif (testFrac is not None) and (r < (validateFrac + testFrac)):
+                if testors.get(classDir, None) is None:
+                    testors[classDir] = [file]
+                else:
+                    testors[classDir].append(file)
+                if testOnly is False:
+                    destPath = testSubdir / file
                     path.rename(destPath)
             else:
                 if trainors.get(classDir, None) is None:
@@ -116,7 +216,10 @@ def moveValidationSubsets(classDirs, headDir='./data', trainDir='train',
                 else:
                     trainors[classDir].append(file)
 
-    return trainors, validators
+    if testFrac is not None:
+        return trainors, validators, testors
+    else:
+        return trainors, validators
 
 
 @timeUsage

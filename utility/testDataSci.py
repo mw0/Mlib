@@ -92,7 +92,9 @@ def testMoveValidationSubsets():
     myHeadDir = './moveDataTest'
     myTrainDir = 'train'
     myValidationDir = 'valid'
-    myFrac = 0.25
+    myTestDir = 'test'
+    myValidateFrac = 0.20
+    myTestFrac = 0.20
 
     seed(32)
     head = Path(myHeadDir)
@@ -110,67 +112,98 @@ def testMoveValidationSubsets():
         print(classy)
         if not classy.is_dir():
             classy.mkdir()
-        for i in range(50):
+        for i in range(100):
             f = classy / f"{i:02d}.jpg"
             f.write_text(f"{i:02d}")
 
-    trainors, validators = moveValidationSubsets(myClassDirs,
-                                                 headDir=myHeadDir,
-                                                 trainDir=myTrainDir,
-                                                 validationDir=myValidationDir,
-                                                 frac=myFrac, test=False)
-    expectedTrain = OrderedDict({'a': ['08.jpg', '25.jpg', '33.jpg', '13.jpg',
-                                       '14.jpg', '00.jpg', '19.jpg', '02.jpg',
-                                       '17.jpg', '29.jpg', '34.jpg', '22.jpg',
-                                       '18.jpg', '23.jpg', '37.jpg', '04.jpg',
-                                       '15.jpg', '46.jpg', '11.jpg', '39.jpg',
-                                       '47.jpg', '26.jpg', '48.jpg', '32.jpg',
-                                       '41.jpg', '12.jpg', '05.jpg', '03.jpg',
-                                       '43.jpg', '40.jpg', '30.jpg'],
-                                 'b': ['31.jpg', '42.jpg', '33.jpg', '45.jpg',
-                                       '14.jpg', '17.jpg', '29.jpg', '28.jpg',
-                                       '34.jpg', '35.jpg', '27.jpg', '22.jpg',
-                                       '18.jpg', '23.jpg', '01.jpg', '38.jpg',
-                                       '04.jpg', '24.jpg', '20.jpg', '07.jpg',
-                                       '36.jpg', '11.jpg', '21.jpg', '39.jpg',
-                                       '47.jpg', '26.jpg', '48.jpg', '32.jpg',
-                                       '41.jpg', '12.jpg', '05.jpg', '43.jpg',
-                                       '16.jpg', '30.jpg'],
-                                 'c': ['31.jpg', '42.jpg', '08.jpg', '25.jpg',
-                                       '33.jpg', '45.jpg', '19.jpg', '02.jpg',
-                                       '17.jpg', '29.jpg', '28.jpg', '35.jpg',
-                                       '27.jpg', '22.jpg', '23.jpg', '37.jpg',
-                                       '01.jpg', '09.jpg', '04.jpg', '24.jpg',
-                                       '36.jpg', '49.jpg', '15.jpg', '44.jpg',
-                                       '46.jpg', '21.jpg', '39.jpg', '47.jpg',
-                                       '32.jpg', '41.jpg', '12.jpg', '10.jpg',
-                                       '05.jpg', '43.jpg', '16.jpg', '40.jpg']}
-    )
+    trainors, validators, testors = \
+        moveValidationSubsets(myClassDirs,
+                              headDir=myHeadDir,
+                              trainDir=myTrainDir,
+                              testDir=myTestDir,
+                              validationDir=myValidationDir,
+                              validateFrac=myValidateFrac,
+                              testFrac=myTestFrac,
+                              testOnly=False)
+    print(trainors)
+    print(validators)
+    print(testors)
+    expectedTrain = \
+        OrderedDict({'a': ['96.jpg', '25.jpg', '70.jpg', '13.jpg', '81.jpg',
+                           '45.jpg', '14.jpg', '50.jpg', '19.jpg', '89.jpg',
+                           '90.jpg', '17.jpg', '76.jpg', '59.jpg', '79.jpg',
+                           '80.jpg', '95.jpg', '22.jpg', '18.jpg', '23.jpg',
+                           '55.jpg', '66.jpg', '63.jpg', '38.jpg', '78.jpg',
+                           '09.jpg', '04.jpg', '62.jpg', '52.jpg', '36.jpg',
+                           '49.jpg', '15.jpg', '85.jpg', '44.jpg', '46.jpg',
+                           '11.jpg', '69.jpg', '93.jpg', '60.jpg', '39.jpg',
+                           '47.jpg', '86.jpg', '97.jpg', '72.jpg', '82.jpg',
+                           '48.jpg', '32.jpg', '41.jpg', '06.jpg', '12.jpg',
+                           '98.jpg', '56.jpg', '40.jpg', '68.jpg'],
+                     'b': ['31.jpg', '42.jpg', '08.jpg', '25.jpg', '33.jpg',
+                           '45.jpg', '14.jpg', '50.jpg', '00.jpg', '64.jpg',
+                           '89.jpg', '17.jpg', '76.jpg', '29.jpg', '61.jpg',
+                           '34.jpg', '75.jpg', '77.jpg', '35.jpg', '74.jpg',
+                           '27.jpg', '83.jpg', '80.jpg', '95.jpg', '23.jpg',
+                           '55.jpg', '01.jpg', '66.jpg', '38.jpg', '67.jpg',
+                           '04.jpg', '62.jpg', '52.jpg', '51.jpg', '07.jpg',
+                           '94.jpg', '87.jpg', '11.jpg', '93.jpg', '88.jpg',
+                           '21.jpg', '39.jpg', '47.jpg', '97.jpg', '72.jpg',
+                           '91.jpg', '71.jpg', '82.jpg', '48.jpg', '41.jpg',
+                           '06.jpg', '12.jpg', '10.jpg', '05.jpg', '03.jpg',
+                           '43.jpg', '56.jpg', '30.jpg', '68.jpg'],
+                     'c': ['31.jpg', '08.jpg', '96.jpg', '70.jpg', '33.jpg',
+                           '13.jpg', '81.jpg', '00.jpg', '73.jpg', '19.jpg',
+                           '02.jpg', '64.jpg', '89.jpg', '90.jpg', '76.jpg',
+                           '61.jpg', '59.jpg', '84.jpg', '99.jpg', '75.jpg',
+                           '77.jpg', '35.jpg', '27.jpg', '83.jpg', '80.jpg',
+                           '22.jpg', '18.jpg', '55.jpg', '37.jpg', '92.jpg',
+                           '01.jpg', '38.jpg', '67.jpg', '04.jpg', '62.jpg',
+                           '24.jpg', '52.jpg', '51.jpg', '54.jpg', '07.jpg',
+                           '87.jpg', '57.jpg', '15.jpg', '85.jpg', '11.jpg',
+                           '69.jpg', '88.jpg', '39.jpg', '97.jpg', '26.jpg',
+                           '53.jpg', '48.jpg', '32.jpg', '41.jpg', '98.jpg',
+                           '05.jpg', '03.jpg', '16.jpg', '56.jpg', '40.jpg',
+                           '30.jpg', '68.jpg']}
+        )
+    expectedValidate = \
+        OrderedDict({'a': ['31.jpg', '33.jpg', '73.jpg', '02.jpg', '64.jpg',
+                           '28.jpg', '61.jpg', '34.jpg', '84.jpg', '99.jpg',
+                           '75.jpg', '77.jpg', '74.jpg', '83.jpg', '67.jpg',
+                           '24.jpg', '20.jpg', '51.jpg', '94.jpg', '87.jpg',
+                           '57.jpg', '21.jpg', '91.jpg', '71.jpg', '53.jpg',
+                           '10.jpg', '03.jpg', '16.jpg'],
+                     'b': ['70.jpg', '13.jpg', '81.jpg', '19.jpg', '28.jpg',
+                           '84.jpg', '99.jpg', '79.jpg', '22.jpg', '18.jpg',
+                           '63.jpg', '09.jpg', '24.jpg', '20.jpg', '57.jpg',
+                           '15.jpg', '85.jpg', '60.jpg', '86.jpg', '32.jpg',
+                           '65.jpg', '98.jpg', '16.jpg'],
+                     'c': ['42.jpg', '14.jpg', '17.jpg', '28.jpg', '74.jpg',
+                           '95.jpg', '23.jpg', '66.jpg', '63.jpg', '78.jpg',
+                           '09.jpg', '20.jpg', '94.jpg', '49.jpg', '46.jpg',
+                           '58.jpg', '60.jpg', '47.jpg', '86.jpg', '82.jpg',
+                           '65.jpg', '06.jpg', '10.jpg', '43.jpg']}
+        )
 
-    expectedValidate = OrderedDict({'a': ['31.jpg', '42.jpg', '45.jpg',
-                                          '28.jpg', '35.jpg', '27.jpg',
-                                          '01.jpg', '38.jpg', '09.jpg',
-                                          '24.jpg', '20.jpg', '07.jpg',
-                                          '36.jpg', '49.jpg', '44.jpg',
-                                          '21.jpg', '06.jpg', '10.jpg',
-                                          '16.jpg'],
-                                    'b': ['08.jpg', '25.jpg', '13.jpg',
-                                          '00.jpg', '19.jpg', '02.jpg',
-                                          '37.jpg', '09.jpg', '49.jpg',
-                                          '15.jpg', '44.jpg', '46.jpg',
-                                          '06.jpg', '10.jpg', '03.jpg',
-                                          '40.jpg'],
-                                    'c': ['13.jpg', '14.jpg', '00.jpg',
-                                          '34.jpg', '18.jpg', '38.jpg',
-                                          '20.jpg', '07.jpg', '11.jpg',
-                                          '26.jpg', '48.jpg', '06.jpg',
-                                          '03.jpg', '30.jpg']}
-    )
+    expectedTest = \
+        OrderedDict({'a': ['42.jpg', '08.jpg', '00.jpg', '29.jpg', '35.jpg',
+                           '27.jpg', '37.jpg', '92.jpg', '01.jpg', '54.jpg',
+                           '07.jpg', '88.jpg', '58.jpg', '26.jpg', '65.jpg',
+                           '05.jpg', '43.jpg', '30.jpg'],
+                     'b': ['96.jpg', '73.jpg', '02.jpg', '90.jpg', '59.jpg',
+                           '37.jpg', '92.jpg', '78.jpg', '54.jpg', '36.jpg',
+                           '49.jpg', '44.jpg', '46.jpg', '69.jpg', '58.jpg',
+                           '26.jpg', '53.jpg', '40.jpg'],
+                     'c': ['25.jpg', '45.jpg', '50.jpg', '29.jpg', '34.jpg',
+                           '79.jpg', '36.jpg', '44.jpg', '93.jpg', '21.jpg',
+                           '72.jpg', '91.jpg', '71.jpg', '12.jpg']}
+        )
 
     system('rm -rf ' + myHeadDir)
 
     assert expectedTrain == trainors
     assert expectedValidate == validators
+    assert expectedTest == testors
 
 
 def testCreateGloVeDict():
