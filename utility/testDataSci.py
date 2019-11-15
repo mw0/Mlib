@@ -3,6 +3,9 @@ from time import sleep
 import numpy as np
 import pandas as pd
 import scipy.sparse as sp
+from random import seed
+from collections import OrderedDict
+from os import system
 
 
 def testSplitDataFrameByClasses():
@@ -82,6 +85,92 @@ def testSplitBalanceDataFrameByClasses():
     assert expectedTrainValCts.equals(dfTrain[classColumn].value_counts()
                                       .sort_index())
     assert expectedTestValCts.equals(dfTest[classColumn].value_counts())
+
+
+def testMoveValidationSubsets():
+    myClassDirs = ['a', 'b', 'c']
+    myHeadDir = './moveDataTest'
+    myTrainDir = 'train'
+    myValidationDir = 'valid'
+    myFrac = 0.25
+
+    seed(32)
+    head = Path(myHeadDir)
+    print(head)
+    if not head.is_dir():
+        head.mkdir()
+
+    train = head / myTrainDir
+    print(train)
+    if not train.is_dir():
+        train.mkdir()
+
+    for classDir in myClassDirs:
+        classy = train / classDir
+        print(classy)
+        if not classy.is_dir():
+            classy.mkdir()
+        for i in range(50):
+            f = classy / f"{i:02d}.jpg"
+            f.write_text(f"{i:02d}")
+
+    trainors, validators = moveValidationSubsets(myClassDirs,
+                                                 headDir=myHeadDir,
+                                                 trainDir=myTrainDir,
+                                                 validationDir=myValidationDir,
+                                                 frac=myFrac, test=False)
+    expectedTrain = OrderedDict({'a': ['08.jpg', '25.jpg', '33.jpg', '13.jpg',
+                                       '14.jpg', '00.jpg', '19.jpg', '02.jpg',
+                                       '17.jpg', '29.jpg', '34.jpg', '22.jpg',
+                                       '18.jpg', '23.jpg', '37.jpg', '04.jpg',
+                                       '15.jpg', '46.jpg', '11.jpg', '39.jpg',
+                                       '47.jpg', '26.jpg', '48.jpg', '32.jpg',
+                                       '41.jpg', '12.jpg', '05.jpg', '03.jpg',
+                                       '43.jpg', '40.jpg', '30.jpg'],
+                                 'b': ['31.jpg', '42.jpg', '33.jpg', '45.jpg',
+                                       '14.jpg', '17.jpg', '29.jpg', '28.jpg',
+                                       '34.jpg', '35.jpg', '27.jpg', '22.jpg',
+                                       '18.jpg', '23.jpg', '01.jpg', '38.jpg',
+                                       '04.jpg', '24.jpg', '20.jpg', '07.jpg',
+                                       '36.jpg', '11.jpg', '21.jpg', '39.jpg',
+                                       '47.jpg', '26.jpg', '48.jpg', '32.jpg',
+                                       '41.jpg', '12.jpg', '05.jpg', '43.jpg',
+                                       '16.jpg', '30.jpg'],
+                                 'c': ['31.jpg', '42.jpg', '08.jpg', '25.jpg',
+                                       '33.jpg', '45.jpg', '19.jpg', '02.jpg',
+                                       '17.jpg', '29.jpg', '28.jpg', '35.jpg',
+                                       '27.jpg', '22.jpg', '23.jpg', '37.jpg',
+                                       '01.jpg', '09.jpg', '04.jpg', '24.jpg',
+                                       '36.jpg', '49.jpg', '15.jpg', '44.jpg',
+                                       '46.jpg', '21.jpg', '39.jpg', '47.jpg',
+                                       '32.jpg', '41.jpg', '12.jpg', '10.jpg',
+                                       '05.jpg', '43.jpg', '16.jpg', '40.jpg']}
+    )
+
+    expectedValidate = OrderedDict({'a': ['31.jpg', '42.jpg', '45.jpg',
+                                          '28.jpg', '35.jpg', '27.jpg',
+                                          '01.jpg', '38.jpg', '09.jpg',
+                                          '24.jpg', '20.jpg', '07.jpg',
+                                          '36.jpg', '49.jpg', '44.jpg',
+                                          '21.jpg', '06.jpg', '10.jpg',
+                                          '16.jpg'],
+                                    'b': ['08.jpg', '25.jpg', '13.jpg',
+                                          '00.jpg', '19.jpg', '02.jpg',
+                                          '37.jpg', '09.jpg', '49.jpg',
+                                          '15.jpg', '44.jpg', '46.jpg',
+                                          '06.jpg', '10.jpg', '03.jpg',
+                                          '40.jpg'],
+                                    'c': ['13.jpg', '14.jpg', '00.jpg',
+                                          '34.jpg', '18.jpg', '38.jpg',
+                                          '20.jpg', '07.jpg', '11.jpg',
+                                          '26.jpg', '48.jpg', '06.jpg',
+                                          '03.jpg', '30.jpg']}
+    )
+
+    system('rm -rf ' + myHeadDir)
+
+    assert expectedTrain == trainors
+    assert expectedValidate == validators
 
 
 def testCreateGloVeDict():

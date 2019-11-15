@@ -5,7 +5,9 @@ from pathlib import Path
 import pickle
 from sklearn.model_selection import train_test_split
 import scipy.sparse as sp
-
+from pathlib import Path
+from random import random
+from collections import OrderedDict
 
 # decorator for timing functions.
 def timeUsage(func):
@@ -38,6 +40,83 @@ def timeUsage(func):
         return retval
 
     return wrapper
+
+
+@timeUsage
+def moveValidationSubsets(classDirs, headDir='./data', trainDir='train',
+                          validationDir='validation', frac=0.20,
+                          test=False):
+    """
+    INPUT:
+        classDirs	list(type=str), list of sub-directories, one for each
+                        class type, into which train and validation data of the
+                        particular class will be put.
+        headDir		str, path to directory containing all training and
+                        test data, default: './data'
+        trainDir	str, default: 'train'
+        validationDir	str, default: 'validation'
+        frac		float, default: 0.20
+        test		bool, set True if only want to generate names of files
+                        that would be moved into each validation sub-directory.
+                        No files will actually be moved. Default: False
+
+    RETURNS:
+	trainors	list(type=str) list of list of files remaining in
+                        training sub-directories.
+	validators	list(type=str) list of list of files remaining in
+                        validation sub-directories.
+
+    This routine assumes that all train data have been put into sub-directories
+    indicated by classDirs, under {headDir}/{trainDir}.
+    Randomly selects a proportion frac of files from each {trainDir}/{classDir}
+    and puts them into the corresponding {headDir}/{validationDir}/{classDir}.
+    """
+
+    head = Path(headDir)
+    train = head / trainDir
+    validation = head / validationDir
+    if not validation.is_dir():
+        validation.mkdir()
+
+    trainors = OrderedDict()
+    validators = OrderedDict()
+    for classDir in classDirs:
+        currentSubdir = train / classDir
+        totCt = len(list(currentSubdir.glob('*.jpg')))
+        if totCt <= 0:
+            raise Exception(f"No files in {currentSubdir}; perhaps you haven't"
+                  " yet moved your files there?")
+        validationSubdir = validation / classDir
+        # if not os.path.isdir(validationSubdir):
+        if not validationSubdir.is_dir():
+            print(f"Path {validationSubdir} does not exist -- creating ...")
+            validationSubdir.mkdir()
+            if not validationSubdir.is_dir():
+                raise Exception(f"Unable to create {validationSubdir}.")
+        validationSubdirCt = len(list(validationSubdir.glob('*.jpg')))
+        if validationSubdirCt > 0:
+            raise Exception(f"There are already {validationSubdirCt} files in "
+                        f"{validationSubdir}. You should figure out why before"
+                        " attempting to re-run this.")
+
+        for path in currentSubdir.glob('*.jpg'):
+            file = path.name
+            r = random()
+            if r < frac:
+                if validators.get(classDir, None) is None:
+                    validators[classDir] = [file]
+                else:
+                    validators[classDir].append(file)
+                if test is False:
+                    destPath = validationSubdir / file
+                    path.rename(destPath)
+            else:
+                if trainors.get(classDir, None) is None:
+                    trainors[classDir] = [file]
+                else:
+                    trainors[classDir].append(file)
+
+    return trainors, validators
 
 
 @timeUsage
