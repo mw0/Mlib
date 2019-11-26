@@ -113,8 +113,8 @@ def testMoveValidationSubsets():
         if not classy.is_dir():
             classy.mkdir()
         for i in range(100):
-            f = classy / f"{i:02d}.jpg"
-            f.write_text(f"{i:02d}")
+            f = classy / f"{classDir}-{i:02d}.jpg"
+            f.write_text(f"{classDir}-{i:02d}")
 
     trainors, validators, testors = \
         moveValidationSubsets(myClassDirs,
@@ -129,75 +129,88 @@ def testMoveValidationSubsets():
     print(validators)
     print(testors)
     expectedTrain = \
-        OrderedDict({'a': ['96.jpg', '25.jpg', '70.jpg', '13.jpg', '81.jpg',
-                           '45.jpg', '14.jpg', '50.jpg', '19.jpg', '89.jpg',
-                           '90.jpg', '17.jpg', '76.jpg', '59.jpg', '79.jpg',
-                           '80.jpg', '95.jpg', '22.jpg', '18.jpg', '23.jpg',
-                           '55.jpg', '66.jpg', '63.jpg', '38.jpg', '78.jpg',
-                           '09.jpg', '04.jpg', '62.jpg', '52.jpg', '36.jpg',
-                           '49.jpg', '15.jpg', '85.jpg', '44.jpg', '46.jpg',
-                           '11.jpg', '69.jpg', '93.jpg', '60.jpg', '39.jpg',
-                           '47.jpg', '86.jpg', '97.jpg', '72.jpg', '82.jpg',
-                           '48.jpg', '32.jpg', '41.jpg', '06.jpg', '12.jpg',
-                           '98.jpg', '56.jpg', '40.jpg', '68.jpg'],
-                     'b': ['31.jpg', '42.jpg', '08.jpg', '25.jpg', '33.jpg',
-                           '45.jpg', '14.jpg', '50.jpg', '00.jpg', '64.jpg',
-                           '89.jpg', '17.jpg', '76.jpg', '29.jpg', '61.jpg',
-                           '34.jpg', '75.jpg', '77.jpg', '35.jpg', '74.jpg',
-                           '27.jpg', '83.jpg', '80.jpg', '95.jpg', '23.jpg',
-                           '55.jpg', '01.jpg', '66.jpg', '38.jpg', '67.jpg',
-                           '04.jpg', '62.jpg', '52.jpg', '51.jpg', '07.jpg',
-                           '94.jpg', '87.jpg', '11.jpg', '93.jpg', '88.jpg',
-                           '21.jpg', '39.jpg', '47.jpg', '97.jpg', '72.jpg',
-                           '91.jpg', '71.jpg', '82.jpg', '48.jpg', '41.jpg',
-                           '06.jpg', '12.jpg', '10.jpg', '05.jpg', '03.jpg',
-                           '43.jpg', '56.jpg', '30.jpg', '68.jpg'],
-                     'c': ['31.jpg', '08.jpg', '96.jpg', '70.jpg', '33.jpg',
-                           '13.jpg', '81.jpg', '00.jpg', '73.jpg', '19.jpg',
-                           '02.jpg', '64.jpg', '89.jpg', '90.jpg', '76.jpg',
-                           '61.jpg', '59.jpg', '84.jpg', '99.jpg', '75.jpg',
-                           '77.jpg', '35.jpg', '27.jpg', '83.jpg', '80.jpg',
-                           '22.jpg', '18.jpg', '55.jpg', '37.jpg', '92.jpg',
-                           '01.jpg', '38.jpg', '67.jpg', '04.jpg', '62.jpg',
-                           '24.jpg', '52.jpg', '51.jpg', '54.jpg', '07.jpg',
-                           '87.jpg', '57.jpg', '15.jpg', '85.jpg', '11.jpg',
-                           '69.jpg', '88.jpg', '39.jpg', '97.jpg', '26.jpg',
-                           '53.jpg', '48.jpg', '32.jpg', '41.jpg', '98.jpg',
-                           '05.jpg', '03.jpg', '16.jpg', '56.jpg', '40.jpg',
-                           '30.jpg', '68.jpg']}
-        )
+        OrderedDict({'a': ['a-18.jpg', 'a-73.jpg', 'a-84.jpg', 'a-26.jpg',
+                           'a-27.jpg', 'a-32.jpg', 'a-07.jpg', 'a-30.jpg',
+                           'a-19.jpg', 'a-67.jpg', 'a-42.jpg', 'a-90.jpg',
+                           'a-60.jpg', 'a-15.jpg', 'a-99.jpg', 'a-44.jpg',
+                           'a-57.jpg', 'a-28.jpg', 'a-17.jpg', 'a-93.jpg',
+                           'a-95.jpg', 'a-24.jpg', 'a-52.jpg', 'a-65.jpg',
+                           'a-45.jpg', 'a-10.jpg', 'a-75.jpg', 'a-79.jpg',
+                           'a-11.jpg', 'a-59.jpg', 'a-09.jpg', 'a-14.jpg',
+                           'a-54.jpg', 'a-74.jpg', 'a-20.jpg', 'a-62.jpg',
+                           'a-69.jpg', 'a-70.jpg', 'a-37.jpg', 'a-25.jpg',
+                           'a-04.jpg', 'a-33.jpg', 'a-48.jpg', 'a-43.jpg',
+                           'a-36.jpg', 'a-56.jpg', 'a-72.jpg', 'a-49.jpg',
+                           'a-63.jpg', 'a-64.jpg', 'a-39.jpg', 'a-85.jpg',
+                           'a-94.jpg', 'a-80.jpg', 'a-13.jpg', 'a-53.jpg',
+                           'a-12.jpg', 'a-50.jpg', 'a-81.jpg', 'a-00.jpg'],
+                     'b': ['b-55.jpg', 'b-92.jpg', 'b-47.jpg', 'b-65.jpg',
+                           'b-91.jpg', 'b-33.jpg', 'b-98.jpg', 'b-76.jpg',
+                           'b-57.jpg', 'b-43.jpg', 'b-70.jpg', 'b-05.jpg',
+                           'b-73.jpg', 'b-97.jpg', 'b-06.jpg', 'b-01.jpg',
+                           'b-40.jpg', 'b-30.jpg', 'b-25.jpg', 'b-08.jpg',
+                           'b-54.jpg', 'b-38.jpg', 'b-94.jpg', 'b-88.jpg',
+                           'b-86.jpg', 'b-31.jpg', 'b-66.jpg', 'b-16.jpg',
+                           'b-11.jpg', 'b-13.jpg', 'b-74.jpg', 'b-67.jpg',
+                           'b-77.jpg', 'b-95.jpg', 'b-04.jpg', 'b-36.jpg',
+                           'b-10.jpg', 'b-85.jpg', 'b-78.jpg', 'b-03.jpg',
+                           'b-64.jpg', 'b-37.jpg', 'b-60.jpg', 'b-72.jpg',
+                           'b-02.jpg', 'b-20.jpg', 'b-58.jpg', 'b-19.jpg',
+                           'b-35.jpg', 'b-69.jpg', 'b-56.jpg', 'b-22.jpg',
+                           'b-18.jpg', 'b-68.jpg', 'b-39.jpg', 'b-59.jpg',
+                           'b-17.jpg', 'b-93.jpg', 'b-32.jpg', 'b-90.jpg'],
+                     'c': ['c-08.jpg', 'c-92.jpg', 'c-07.jpg', 'c-55.jpg',
+                           'c-26.jpg', 'c-33.jpg', 'c-95.jpg', 'c-37.jpg',
+                           'c-10.jpg', 'c-69.jpg', 'c-16.jpg', 'c-41.jpg',
+                           'c-31.jpg', 'c-24.jpg', 'c-56.jpg', 'c-59.jpg',
+                           'c-57.jpg', 'c-18.jpg', 'c-49.jpg', 'c-70.jpg',
+                           'c-01.jpg', 'c-43.jpg', 'c-84.jpg', 'c-42.jpg',
+                           'c-96.jpg', 'c-51.jpg', 'c-94.jpg', 'c-15.jpg',
+                           'c-06.jpg', 'c-45.jpg', 'c-68.jpg', 'c-00.jpg',
+                           'c-98.jpg', 'c-11.jpg', 'c-38.jpg', 'c-28.jpg',
+                           'c-91.jpg', 'c-90.jpg', 'c-71.jpg', 'c-83.jpg',
+                           'c-81.jpg', 'c-22.jpg', 'c-35.jpg', 'c-53.jpg',
+                           'c-75.jpg', 'c-46.jpg', 'c-50.jpg', 'c-72.jpg',
+                           'c-30.jpg', 'c-86.jpg', 'c-99.jpg', 'c-65.jpg',
+                           'c-76.jpg', 'c-32.jpg', 'c-34.jpg', 'c-64.jpg',
+                           'c-61.jpg', 'c-09.jpg', 'c-12.jpg', 'c-27.jpg']
+        })
+
     expectedValidate = \
-        OrderedDict({'a': ['31.jpg', '33.jpg', '73.jpg', '02.jpg', '64.jpg',
-                           '28.jpg', '61.jpg', '34.jpg', '84.jpg', '99.jpg',
-                           '75.jpg', '77.jpg', '74.jpg', '83.jpg', '67.jpg',
-                           '24.jpg', '20.jpg', '51.jpg', '94.jpg', '87.jpg',
-                           '57.jpg', '21.jpg', '91.jpg', '71.jpg', '53.jpg',
-                           '10.jpg', '03.jpg', '16.jpg'],
-                     'b': ['70.jpg', '13.jpg', '81.jpg', '19.jpg', '28.jpg',
-                           '84.jpg', '99.jpg', '79.jpg', '22.jpg', '18.jpg',
-                           '63.jpg', '09.jpg', '24.jpg', '20.jpg', '57.jpg',
-                           '15.jpg', '85.jpg', '60.jpg', '86.jpg', '32.jpg',
-                           '65.jpg', '98.jpg', '16.jpg'],
-                     'c': ['42.jpg', '14.jpg', '17.jpg', '28.jpg', '74.jpg',
-                           '95.jpg', '23.jpg', '66.jpg', '63.jpg', '78.jpg',
-                           '09.jpg', '20.jpg', '94.jpg', '49.jpg', '46.jpg',
-                           '58.jpg', '60.jpg', '47.jpg', '86.jpg', '82.jpg',
-                           '65.jpg', '06.jpg', '10.jpg', '43.jpg']}
-        )
+        OrderedDict({'a': ['a-71.jpg', 'a-98.jpg', 'a-82.jpg', 'a-38.jpg',
+                           'a-58.jpg', 'a-51.jpg', 'a-68.jpg', 'a-46.jpg',
+                           'a-87.jpg', 'a-92.jpg', 'a-78.jpg', 'a-21.jpg',
+                           'a-29.jpg', 'a-34.jpg', 'a-97.jpg', 'a-40.jpg',
+                           'a-88.jpg', 'a-01.jpg', 'a-23.jpg', 'a-02.jpg'],
+                     'b': ['b-62.jpg', 'b-96.jpg', 'b-07.jpg', 'b-53.jpg',
+                           'b-42.jpg', 'b-23.jpg', 'b-50.jpg', 'b-12.jpg',
+                           'b-79.jpg', 'b-52.jpg', 'b-00.jpg', 'b-15.jpg',
+                           'b-84.jpg', 'b-89.jpg', 'b-87.jpg', 'b-46.jpg',
+                           'b-71.jpg', 'b-21.jpg', 'b-75.jpg', 'b-29.jpg'],
+                     'c': ['c-14.jpg', 'c-66.jpg', 'c-40.jpg', 'c-25.jpg',
+                           'c-13.jpg', 'c-19.jpg', 'c-54.jpg', 'c-47.jpg',
+                           'c-79.jpg', 'c-20.jpg', 'c-88.jpg', 'c-63.jpg',
+                           'c-82.jpg', 'c-36.jpg', 'c-03.jpg', 'c-44.jpg',
+                           'c-93.jpg', 'c-89.jpg', 'c-73.jpg', 'c-52.jpg']
+        })
 
     expectedTest = \
-        OrderedDict({'a': ['42.jpg', '08.jpg', '00.jpg', '29.jpg', '35.jpg',
-                           '27.jpg', '37.jpg', '92.jpg', '01.jpg', '54.jpg',
-                           '07.jpg', '88.jpg', '58.jpg', '26.jpg', '65.jpg',
-                           '05.jpg', '43.jpg', '30.jpg'],
-                     'b': ['96.jpg', '73.jpg', '02.jpg', '90.jpg', '59.jpg',
-                           '37.jpg', '92.jpg', '78.jpg', '54.jpg', '36.jpg',
-                           '49.jpg', '44.jpg', '46.jpg', '69.jpg', '58.jpg',
-                           '26.jpg', '53.jpg', '40.jpg'],
-                     'c': ['25.jpg', '45.jpg', '50.jpg', '29.jpg', '34.jpg',
-                           '79.jpg', '36.jpg', '44.jpg', '93.jpg', '21.jpg',
-                           '72.jpg', '91.jpg', '71.jpg', '12.jpg']}
-        )
+        OrderedDict({'a': ['a-31.jpg', 'a-22.jpg', 'a-76.jpg', 'a-35.jpg',
+                           'a-05.jpg', 'a-41.jpg', 'a-66.jpg', 'a-55.jpg',
+                           'a-86.jpg', 'a-16.jpg', 'a-91.jpg', 'a-47.jpg',
+                           'a-03.jpg', 'a-89.jpg', 'a-83.jpg', 'a-61.jpg',
+                           'a-77.jpg', 'a-06.jpg', 'a-96.jpg', 'a-08.jpg'],
+                     'b': ['b-49.jpg', 'b-82.jpg', 'b-41.jpg', 'b-44.jpg',
+                           'b-34.jpg', 'b-83.jpg', 'b-26.jpg', 'b-99.jpg',
+                           'b-80.jpg', 'b-45.jpg', 'b-28.jpg', 'b-61.jpg',
+                           'b-27.jpg', 'b-48.jpg', 'b-81.jpg', 'b-63.jpg',
+                           'b-14.jpg', 'b-51.jpg', 'b-09.jpg', 'b-24.jpg'],
+                     'c': ['c-67.jpg', 'c-48.jpg', 'c-21.jpg', 'c-78.jpg',
+                           'c-87.jpg', 'c-23.jpg', 'c-74.jpg', 'c-60.jpg',
+                           'c-39.jpg', 'c-02.jpg', 'c-58.jpg', 'c-97.jpg',
+                           'c-17.jpg', 'c-29.jpg', 'c-85.jpg', 'c-62.jpg',
+                           'c-05.jpg', 'c-80.jpg', 'c-04.jpg', 'c-77.jpg']
+        })
 
     system('rm -rf ' + myHeadDir)
 

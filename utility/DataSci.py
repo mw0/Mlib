@@ -6,7 +6,7 @@ import pickle
 from sklearn.model_selection import train_test_split
 import scipy.sparse as sp
 from pathlib import Path
-from random import random
+from random import random, shuffle
 from collections import OrderedDict
 
 # decorator for timing functions.
@@ -83,7 +83,7 @@ def moveValidationSubsets(classDirs, headDir='./data', trainDir='train',
     """
 
     if (testFrac is not None) and (testFrac > 0.0) and testDir is None:
-        raise ValueError(f"You have testFrac={testFrac}. When not None, "
+        raise ValueError(f"You have testFrac: {testFrac}.\nWhen not None, "
                          "you must specify a non-None testDir value.")
 
     head = Path(headDir)
@@ -190,10 +190,22 @@ def moveValidationSubsets(classDirs, headDir='./data', trainDir='train',
                                 f"{testSubdir}. You should figure out why"
                                 " before attempting to re-run this.")
 
-        for path in trainSubdir.glob('*.' + fileSuffix):
+        trainPaths = trainSubdir.glob('*.' + fileSuffix)
+        trainList = list(trainPaths)
+        trainCt = len(trainList)
+        shuffle(trainList)
+
+        validateLimit = round(trainCt*validateFrac)
+        validateList = trainList[:validateLimit]
+        print(f"validateList = trainList[:{validateLimit}]")
+        print("validateList:\n", sorted([Path(t).name for t in validateList]))
+
+        for filePath in validateList:
+            path = Path(filePath)
             file = path.name
-            r = random()
-            if r < validateFrac:
+            if path.stat().st_size == 0:
+                path.remove_p()
+            else:
                 if validators.get(classDir, None) is None:
                     validators[classDir] = [file]
                 else:
@@ -202,14 +214,41 @@ def moveValidationSubsets(classDirs, headDir='./data', trainDir='train',
                     destPath = validationSubdir / file
                     path.rename(destPath)
 
-            elif (testFrac is not None) and (r < (validateFrac + testFrac)):
-                if testors.get(classDir, None) is None:
-                    testors[classDir] = [file]
+        if testFrac is None:
+            trainLimit = round(trainCt*validateFrac)
+            newTrainList = trainList[trainLimit:]
+            print(f"newTrainList = trainList[{trainLimit}:]")
+            print("newTrainList:\n",
+                  sorted([Path(t).name for t in newTrainList]))
+        else:
+            testLimit = round(trainCt*(validateFrac + testFrac))
+            testList = trainList[validateLimit: testLimit]
+            print(f"testList = trainList[{validateLimit}: {testLimit}]")
+            print("testList:\n", sorted([Path(t).name for t in testList]))
+            newTrainList = trainList[testLimit:]
+            print(f"newTrainList = trainList[{testLimit}:]")
+            print("newTrainList:\n",
+                  sorted([Path(t).name for t in newTrainList]))
+
+            for filePath in testList:
+                path = Path(filePath)
+                file = path.name
+                if path.stat().st_size == 0:
+                    path.remove_p()
                 else:
-                    testors[classDir].append(file)
-                if testOnly is False:
-                    destPath = testSubdir / file
-                    path.rename(destPath)
+                    if testors.get(classDir, None) is None:
+                        testors[classDir] = [file]
+                    else:
+                        testors[classDir].append(file)
+                    if testOnly is False:
+                        destPath = testSubdir / file
+                        path.rename(destPath)
+
+        for filePath in newTrainList:
+            path = Path(filePath)
+            file = path.name
+            if path.stat().st_size == 0:
+                path.remove_p()
             else:
                 if trainors.get(classDir, None) is None:
                     trainors[classDir] = [file]
