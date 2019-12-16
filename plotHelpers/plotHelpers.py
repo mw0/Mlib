@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import colorcet as cc
 import matplotlib.colors
+from functools import wraps
 
 
 # Decorator for timing functions.
@@ -21,10 +22,12 @@ def timeUsage(func):
     function. Formats differ for cases < 1 min, < 1 hour and >= 1 hour.
     """
 
-    def wrapper(*args, **kwargs):
+    @wraps(func)
+    def _timeUsage(*args, **kwds):
+
         t0 = timeit.default_timer()
 
-        retval = func(*args, **kwargs)
+        retval = func(*args, **kwds)
 
         t1 = timeit.default_timer()
         Δt = t1 - t0
@@ -40,7 +43,7 @@ def timeUsage(func):
             print(f"Δt: {Δt % 60.0:5.2f}s.")
         return retval
 
-    return wrapper
+    return _timeUsage
 
 
 @timeUsage

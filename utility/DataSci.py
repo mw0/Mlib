@@ -8,22 +8,25 @@ import scipy.sparse as sp
 from pathlib import Path
 from random import random, shuffle
 from collections import OrderedDict
+from functools import wraps
 
-# decorator for timing functions.
+
+# Decorator for timing functions.
 def timeUsage(func):
     """
     INPUT:
         func	obj, function you want timed
 
     This is a decorator that prints out the duration of execution for a
-    function. Formats differ for cases < 1 min, < 1 hour and < 1 day and
-    >= 1 day.
+    function. Formats differ for cases < 1 min, < 1 hour and >= 1 hour.
     """
 
-    def wrapper(*args, **kwargs):
+    @wraps(func)
+    def _timeUsage(*args, **kwds):
+
         t0 = timeit.default_timer()
 
-        retval = func(*args, **kwargs)
+        retval = func(*args, **kwds)
 
         t1 = timeit.default_timer()
         Δt = t1 - t0
@@ -39,7 +42,7 @@ def timeUsage(func):
             print(f"Δt: {Δt % 60.0:5.2f}s.")
         return retval
 
-    return wrapper
+    return _timeUsage
 
 
 @timeUsage
