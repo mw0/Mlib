@@ -565,6 +565,9 @@ def nums2words(s, precision=2):
     '3235' --> 'three-twenty-three ten'
     """
 
+    if s == '':
+        return s
+    
     if precision != 2:
         raise NotImplemented(f"Only precision 2 implimented; you specified {precision}.")
 
