@@ -368,6 +368,29 @@ def testSparseUniq():
     assert np.array_equal(inds, iExpected)
 
 
+def testNums2words():
+    assert nums2words('') == ''
+    assert nums2words('0') == 'zero'
+    assert nums2words('3') == 'three'
+    assert nums2words('04') == 'four'
+    assert nums2words('14') == 'fourteen'
+    assert nums2words('20') == 'twenty'
+    assert nums2words('23') == 'twenty-three'
+    assert nums2words('32') == 'thirty-two'
+    assert nums2words('46') == 'fourty-six'
+    assert nums2words('74') == 'seventy-four'
+    assert nums2words('92`') == 'ninety-two'
+    srcStr = ('Wait! She said that there would be 200, or was it 2000, '
+              'items in the ... store.')
+    tstStr = ('wait she said that there would be two-hundred or was it '
+              'two-thousand items in the store')
+    assert nums2words(srcStr) == tstStr
+    srcStr = 'There were 2-13 and 63– 84 and 100—300 idiots.'
+    tstStr = ('there were two to thirteen and sixty-three to eighty-four '
+              'and one-hundred to three-hundred idiots')
+    assert nums2words(srcStr) == tstStr
+
+
 @timeUsage
 def sleeper(seconds):
     sleep(seconds)

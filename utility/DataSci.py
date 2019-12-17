@@ -3,12 +3,14 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 import pickle
+from string import punctuation
 from sklearn.model_selection import train_test_split
 import scipy.sparse as sp
 from pathlib import Path
 from random import random, shuffle
 from collections import OrderedDict
 from functools import wraps
+from nltk.tokenize import RegexpTokenizer
 
 
 # Decorator for timing functions.
@@ -506,3 +508,91 @@ def sparseUniq(spMatrix, axis=0):
         spUniq = spUniq.T
 
     return spUniq, inds
+
+tokenizer = RegexpTokenizer(r'[\-\–\—]+|\w+')
+digit2text = {0:     'zero',
+              1:     'one',
+              2:     'two',
+              3:     'three',
+              4:     'four',
+              5:     'five',
+              6:     'six',
+              7:     'seven',
+              8:     'eight',
+              9:     'nine',
+              10:    'ten',
+              11:    'eleven',
+              12:    'twelve',
+              13:    'thirteen',
+              14:    'fourteen',
+              15:    'fifteen',
+              16:    'sixteen',
+              17:    'seventeen',
+              18:    'eighteen',
+              19:    'nineteen',
+              20:    'twenty',
+              30:    'thirty',
+              40:    'fourty',
+              50:    'fifty',
+              60:    'sixty',
+              70:    'seventy',
+              80:    'eighty',
+              90:    'ninety',
+              100:   'one-hundred',
+              200:   'two-hundred',
+              300:   'three-hundred',
+              400:   'four-hundred',
+              500:   'five-hundred',
+              600:   'six-hundred',
+              700:   'seven-hundred',
+              800:   'eight-hundred',
+              900:   'nine-hundred',
+              1000:  'one-thousand',
+              2000:  'two-thousand',
+              10000: 'ten-thousand',
+              }
+
+def nums2words(s, precision=2):
+    """
+    INPUT:
+        s				str, string to be converted, if digits
+        precision		int, number of digits of precision when summarizing s,
+                        default: 2, max=3
+
+    If s contains an integer string, this will return a string for a number
+    approximately representing the integer. E.g.,
+    '3235' --> 'thirty-two hundred', for precision == 2, or
+    '3235' --> 'three-twenty-three ten'
+    """
+
+    if precision != 2:
+        raise NotImplemented(f"Only precision 2 implimented; you specified {precision}.")
+
+    tokens = tokenizer.tokenize(s)
+    As = tokens[:-2]
+    Bs = tokens[1:-1]
+    Cs = tokens[2:]
+
+    for i, (a, b, c) in enumerate(zip(As, Bs, Cs)):
+        if a.isdigit() and c.isdigit() and (b in ['-', '–', '—']):
+            tokens[i + 1] = 'to'
+
+    tokens = list(map(lambda w: w.lower(), tokens))
+
+    for i, token in enumerate(tokens):
+        if token.isdigit():
+            intToken = int(token)
+            if intToken <= 20:
+                tokens[i] = digit2text[intToken]
+            elif len(token) == 2:
+                tens = int(token[0])
+                singles = int(token[1])
+                tokens[i] = digit2text[10*tens] + '-' + digit2text[singles]
+            elif len(token) == 3:
+                if intToken % 100 == 0:
+                    tokens[i] = digit2text[intToken]
+            elif len(token) == 4:
+                if (intToken == 1000) or (intToken == 2000):
+                    tokens[i] = digit2text[intToken]
+
+    return ' '.join(tokens)
