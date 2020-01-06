@@ -73,9 +73,9 @@ def moveValidationSubsets(classDirs, headDir='./data', trainDir='train',
                         No files will actually be moved. Default: False
 
     RETURNS:
-	trainors	list(type=str) list of list of files remaining in
+        trainors	list(type=str) list of list of files remaining in
                         training sub-directories.
-	validators	list(type=str) list of list of files remaining in
+        validators	list(type=str) list of list of files remaining in
                         validation sub-directories.
 
     This routine assumes that all train data have been put into sub-directories
@@ -167,7 +167,7 @@ def moveValidationSubsets(classDirs, headDir='./data', trainDir='train',
         totCt = len(list(trainSubdir.glob('*.' + fileSuffix)))
         if totCt <= 0:
             raise Exception(f"No files in {trainSubdir}; perhaps you haven't"
-                  " yet moved your files there?")
+                            " yet moved your files there?")
 
         validationSubdir = validate / classDir
         if not validationSubdir.is_dir():
@@ -175,11 +175,12 @@ def moveValidationSubsets(classDirs, headDir='./data', trainDir='train',
             validationSubdir.mkdir()
             if not validationSubdir.is_dir():
                 raise Exception(f"Unable to create {validationSubdir}.")
-        validationSubdirCt = len(list(validationSubdir.glob('*.' + fileSuffix)))
+        validationSubdirCt = \
+            len(list(validationSubdir.glob('*.' + fileSuffix)))
         if validationSubdirCt > 0:
-            raise Exception(f"There are already {validationSubdirCt} files in "
-                        f"{validationSubdir}. You should figure out why before"
-                        " attempting to re-run this.")
+            raise Exception(f"There are already {validationSubdirCt} files in"
+                            f" {validationSubdir}. You should figure out why"
+                            " before attempting to re-run this.")
 
         if testFrac is not None:
             testSubdir = testing / classDir
@@ -275,6 +276,15 @@ def splitDataFrameByClasses(df, classColumn, testFrac=0.33, volubility=1,
 
     Returns dfTrain, dfTest.
     """
+
+    print("Consider whether sklearn's built-in method would work instead:\n\n"
+          "    from sklearn.model_selection import "
+          "    train_test_split\n"
+          "                  .\n"
+          "                  .\n"
+          "                  .\n"
+          "    Xtrain, Xtest, yTrain, yTest = \\\n"
+          "        train_test_split(X, y, stratify=y)")
 
     if volubility > 0:
         print(f"df.shape: {df.shape}")
@@ -405,12 +415,14 @@ def splitBalanceDataFrameByClasses(df, classColumn, targetClassSize,
 
 
 @timeUsage
-def GloVeDict(GloVeDir, embeddingSz=200):
+def GloVeDict(GloVeDir, embeddingSz=200, normed=True):
     """
     INPUT:
         GloVeDir	str, path to GloVe embedding data
         embeddingSz	int, one of [50, 100, 200, 300], the dimension of
                         the embedding vectors you want returned.
+        normed		bool, indicating whether or not to normalize the
+                        embedding vectors, default: True
 
     Returns a dict containing GloVe word embedding vectors of specified
     dimensions, indexed by un-cased words, as computed by Stanford from the
@@ -424,7 +436,10 @@ def GloVeDict(GloVeDir, embeddingSz=200):
         raise ValueError(f"You supplied embeddingSz: {embeddingSz}, but it"
                          " must be one of [50, 100, 200, 300].")
 
-    GloVeFile = Path(GloVeDir) / f"GloVe.6B.{embeddingSz:03d}.pkl"
+    if normed:
+        GloVeFile = Path(GloVeDir) / f"GloVe.6B.{embeddingSz:03d}normed.pkl"
+    else:
+        GloVeFile = Path(GloVeDir) / f"GloVe.6B.{embeddingSz:03d}.pkl"
     if GloVeFile.exists():
         print(f"Loading GloVe vectors from {GloVeFile} ...")
         with open(GloVeFile, 'rb') as pickledGloVe:
@@ -442,7 +457,10 @@ def GloVeDict(GloVeDir, embeddingSz=200):
                 parts = l.split()
                 word = parts[0]
                 coeffs = np.asarray(parts[1:], dtype='float32')
-                GloVeDict[word] = coeffs
+                if normed:
+                    GloVeDict[word] = coeffs/np.linalg.norm(coeffs)
+                else:
+                    GloVeDict[word] = coeffs
             GloVeVects.close()
 
             print(f"vocab size: {len(GloVeDict.keys())}.")
@@ -509,6 +527,7 @@ def sparseUniq(spMatrix, axis=0):
 
     return spUniq, inds
 
+
 tokenizer = RegexpTokenizer(r'[\-\–\—]+|\w+')
 digit2text = {0:     'zero',
               1:     'one',
@@ -552,6 +571,7 @@ digit2text = {0:     'zero',
               10000: 'ten-thousand',
               }
 
+
 def nums2words(s, precision=2):
     """
     INPUT:
@@ -562,14 +582,15 @@ def nums2words(s, precision=2):
     If s contains an integer string, this will return a string for a number
     approximately representing the integer. E.g.,
     '3235' --> 'thirty-two hundred', for precision == 2, or
-    '3235' --> 'three-twenty-three ten'
+    '3235' --> 'three-twenty-three ten', for precision == 3
     """
 
     if s == '':
         return s
-    
+
     if precision != 2:
-        raise NotImplemented(f"Only precision 2 implimented; you specified {precision}.")
+        raise NotImplemented("Only precision 2 implimented; you specified "
+                             f"{precision}.")
 
     tokens = tokenizer.tokenize(s)
     As = tokens[:-2]
