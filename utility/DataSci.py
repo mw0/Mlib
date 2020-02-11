@@ -562,13 +562,10 @@ digit2text = {0:     'zero',
               300:   'three-hundred',
               400:   'four-hundred',
               500:   'five-hundred',
-              600:   'six-hundred',
-              700:   'seven-hundred',
-              800:   'eight-hundred',
-              900:   'nine-hundred',
               1000:  'one-thousand',
               2000:  'two-thousand',
               10000: 'ten-thousand',
+              1000000: 'one-million'
               }
 
 
@@ -613,10 +610,77 @@ def nums2words(s, precision=2):
                 singles = int(token[1])
                 tokens[i] = digit2text[10*tens] + '-' + digit2text[singles]
             elif len(token) == 3:
-                if intToken % 100 == 0:
+                if (intToken % 100 == 0) and (intToken < 600):
                     tokens[i] = digit2text[intToken]
+                # else:
+                #     tokens[i] = "-".join[digit2text[int(t)] for t in token]
             elif len(token) == 4:
                 if (intToken == 1000) or (intToken == 2000):
                     tokens[i] = digit2text[intToken]
+                # elif intToken % 100 == 0:
+                #     tokens[i] = digit2text[int(intToken//100)] + '-hundred'
+                # else:
+                #     tokens[i] = "-".join[digit2text[int(t)] for t in token]
+            elif len(token) == 5 and intToken == 10000:
+                tokens[i] = digit2text[intToken]
+            elif len(token) == 7 and intToken == 1000000:
+                tokens[i] = digit2text[intToken]
 
+    return ' '.join(tokens)
+
+
+def nums2GloVeWords(s, precision=2):
+    """
+    INPUT:
+        s				str, string to be converted, if digits
+        precision		int, number of digits of precision when summarizing s,
+                        default: 2, max=3
+
+    Attempts to convert numbers into strings for which GloVe has embeddings.
+    If s contains an integer string, this will return a string for a number
+    approximately representing the integer. E.g.,
+    '3235' --> 'thirty-two hundred', for precision == 2, or
+    '3235' --> '
+    '3235' --> 'thirty-two thirty-five', for precision == 4
+    """
+
+    if s == '':
+        return s
+
+    if precision != 2:
+        raise NotImplemented("Only precision 2 implimented; you specified "
+                             f"{precision}.")
+
+    tokens = tokenizer.tokenize(s)
+    As = tokens[:-2]
+    Bs = tokens[1:-1]
+    Cs = tokens[2:]
+
+    for i, (a, b, c) in enumerate(zip(As, Bs, Cs)):
+        if a.isdigit() and c.isdigit() and (b in ['-', '–', '—']):
+            tokens[i + 1] = 'to'
+
+    tokens = list(map(lambda w: w.lower(), tokens))
+
+    for i, token in enumerate(tokens):
+        if token.isdigit():
+            intToken = int(token)
+            if intToken <= 20:
+                tokens[i] = digit2text[intToken]
+            elif len(token) == 2:
+                tens = int(token[0])
+                singles = int(token[1])
+                tokens[i] = digit2text[10*tens] + '-' + digit2text[singles]
+            elif len(token) == 3:
+                if intToken % 100 == 0:
+                    tokens[i] = digit2text[intToken]
+                # else:
+                #     tokens[i] = "-".join[digit2text[int(t)] for t in token]
+            elif len(token) == 4:
+                if (intToken == 1000) or (intToken == 2000):
+                    tokens[i] = digit2text[intToken]
+                # elif intToken % 100 == 0:
+                #     tokens[i] = digit2text[int(intToken//100)] + '-hundred'
+                # else:
+                #     tokens[i] = "-".join[digit2text[int(t)] for t in token]
     return ' '.join(tokens)

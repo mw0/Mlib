@@ -473,6 +473,9 @@ def testNums2words():
     assert nums2words('46') == 'fourty-six'
     assert nums2words('74') == 'seventy-four'
     assert nums2words('92`') == 'ninety-two'
+    # assert nums2words('392`') == 'three-ninety-two'
+    # assert nums2words('5397') == 'five-three-nine-seven'
+    # assert nums2words('1200') == 'twelve-hundred'
     srcStr = ('Wait! She said that there would be 200, or was it 2000, '
               'items in the ... store.')
     tstStr = ('wait she said that there would be two-hundred or was it '
