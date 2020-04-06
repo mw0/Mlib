@@ -51,7 +51,7 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
                         type='counts', titleText=None, ax=None,
                         saveAs=None, xlabelFontSz=13, ylabelFontSz=13,
                         xtickFontSz=12, ytickFontSz=12, titleFontSz=15,
-                        xtickRotate=0.0, ytickRotate=0.0):
+                        xtickRotate=0.0, ytickRotate=0.0, dir='./'):
     """
     INPUTS:
         confustionMat	np.array (square, floats), containing confusion matrix
@@ -63,6 +63,8 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
         titleText	str, title for plot
         ax		optional matplotlib.axis object, default: None
         saveAs	str, in ['pdf', 'png', 'svg']
+        dir		str, directory into which the plot should be saved,
+                        default: './'
 
     Creates heatmap representing confusion matrix passed via confusionMat. When
     type == 'recall', normalization across predicted values ensures that
@@ -129,14 +131,14 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
     # plt.tight_layout(rect=[0.0, 0.03, 1.0, 0.97])
     plt.tight_layout(rect=[0.0, 0.10, 1.0, 0.90])
     if saveAs == 'pdf':
-        plt.savefig("".join(['ConfusionMatrix', name,
-                             fileNameAugmentString, '.pdf']))
+        plt.savefig(dir + "".join(['ConfusionMatrix', name,
+                                   fileNameAugmentString, '.pdf']))
     elif saveAs == 'png':
-        plt.savefig("".join(['ConfusionMatrix', name,
-                             fileNameAugmentString, '.png']))
+        plt.savefig(dir + "".join(['ConfusionMatrix', name,
+                                   fileNameAugmentString, '.png']))
     elif saveAs == 'svg':
-        plt.savefig("".join(['ConfusionMatrix', name,
-                             fileNameAugmentString, '.svg']))
+        plt.savefig(dir + "".join(['ConfusionMatrix', name,
+                                   fileNameAugmentString, '.svg']))
 
     return
 
@@ -145,7 +147,7 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
 def detailedHistogram(data, xlabel=None, ylabel=None,
                       xtickNames=None, ytickNames=None, xlim=None,
                       ylim=None, titleText=None, figName=None, ax=None,
-                      ylog=False, saveAs=None, volubility=1):
+                      ylog=False, saveAs=None, volubility=1, dir='./'):
     """
     INPUTS:
         data		array type, containing values of variable of interest
@@ -167,6 +169,8 @@ def detailedHistogram(data, xlabel=None, ylabel=None,
         saveAs		str, in ['pdf', 'png', 'svg'] or None
         volubility	int, more blather for higher values, none for 0,
                         default: 1
+        dir		str, directory into which the plot should be saved,
+                        default: './'
 
     Constructs histogram with a bin for every integer on (0, max(data))
     — slow and very detailed, if set(data) is very large.
@@ -273,22 +277,19 @@ def detailedHistogram(data, xlabel=None, ylabel=None,
 
     if saveAs == 'pdf':
         if volubility > 1:
-            print("Saving as ", "".join([nameBase,
-                                         fileNameAugmentString, '.pdf']), '.')
-        plt.savefig("".join([nameBase,
-                             fileNameAugmentString, '.pdf']))
+            print("Saving as ",
+                  dir + "".join([nameBase, fileNameAugmentString, '.pdf']), '.')
+        plt.savefig(dir + "".join([nameBase, fileNameAugmentString, '.pdf']))
     elif saveAs == 'png':
         if volubility > 1:
-            print("Saving as ", "".join([nameBase,
-                                         fileNameAugmentString, '.png']), '.')
-        plt.savefig("".join([nameBase,
-                             fileNameAugmentString, '.png']))
+            print("Saving as ",
+                  dir + "".join([nameBase, fileNameAugmentString, '.png']), '.')
+        plt.savefig(dir + "".join([nameBase, fileNameAugmentString, '.png']))
     elif saveAs == 'svg':
         if volubility > 1:
-            print("Saving as ", "".join([nameBase,
-                                         fileNameAugmentString, '.svg']), '.')
-        plt.savefig("".join([nameBase,
-                             fileNameAugmentString, '.svg']))
+            print("Saving as ",
+                  dir + "".join([nameBase, fileNameAugmentString, '.svg']), '.')
+        plt.savefig(dir + "".join([nameBase, fileNameAugmentString, '.svg']))
 
     return
 
@@ -296,7 +297,7 @@ def detailedHistogram(data, xlabel=None, ylabel=None,
 @timeUsage
 def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
                     xrot=65.0, titleText=None, ax=None, saveAs=None,
-                    xlim=None, ylim=None):
+                    xlim=None, ylim=None, dir='./'):
     """
     INPUTS:
         df	        Pandas DataFrame
@@ -312,6 +313,8 @@ def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
         saveAs	str, in ['pdf', 'png', 'svg']
         xlim, ylim	list (type numeric), if not None will be used to set
                         limits of plot.
+        dir		str, directory into which the plot should be saved,
+                        default: './'
     """
 
     classCts = pd.DataFrame(df[colName].value_counts())
@@ -384,14 +387,14 @@ def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
         fileNameAugmentString = ""
 
     if saveAs == 'pdf':
-        plt.savefig("".join([colName + 'Frequencies',
-                             fileNameAugmentString, '.pdf']))
+        plt.savefig(dir + "".join([colName + 'Frequencies',
+                                   fileNameAugmentString, '.pdf']))
     elif saveAs == 'png':
-        plt.savefig("".join([colName + 'Frequencies',
-                             fileNameAugmentString, '.png']))
+        plt.savefig(dir + "".join([colName + 'Frequencies',
+                                   fileNameAugmentString, '.png']))
     elif saveAs == 'svg':
-        plt.savefig("".join([colName + 'Frequencies',
-                             fileNameAugmentString, '.svg']))
+        plt.savefig(dir + "".join([colName + 'Frequencies',
+                                   fileNameAugmentString, '.svg']))
 
     return
 
@@ -400,7 +403,7 @@ def dependencePlot(ind, shap_values, features, feature_names=None,
                    display_features=None, interaction_index="auto",
                    color="#1E88E5", axis_color="#333333", cmap=None,
                    dot_size=16, x_jitter=0, alpha=1, title=None,
-                   xmin=None, xmax=None, ax=None, show=True):
+                   xmin=None, xmax=None, ax=None, show=True, dir='./'):
     """
     Create a SHAP dependence plot, colored by an interaction feature.
 
@@ -464,6 +467,7 @@ def dependencePlot(ind, shap_values, features, feature_names=None,
          Optionally specify an existing matplotlib Axes object, into which the
          plot will be placed. In this case we do not create a Figure, otherwise
          we do.
+    dir: str, directory into which the plot should be saved, default: './'
 
     """
 
