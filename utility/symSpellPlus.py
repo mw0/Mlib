@@ -10,16 +10,16 @@ def categorizeWords(sent):
     """
     sent		list(type=str), sentence, tokenized into words
 
-    returns a list of integers equalling the length of the sentence, with values
-    according to:
+    returns a list of integers equalling the length of the sentence, with
+    values according to:
 
         0, no upper case letters
         1, first letter capitalized	(includes 'I')
         2, all caps			(not 'I'!)
         3, mixed (at least one not first letter)
 
-    Used elsewhere to decide how to handle caps after string processing such as
-    spell checking.
+    Used elsewhere to decide how to handle caps after string processing such
+    as spell checking.
     """
 
     returnArr = []
@@ -114,7 +114,7 @@ def symSpellLine(symSpell, vocab, sent, maxEditDist=2):
 def bestSymspelledLine(words, symSpell, vocab, line):
     wordCategories = categorizeWords(words)
     symspelledLine = symSpellLine(symSpell, vocab, line)
-    symWords = word_tokenize(symspelledLine)                
+    symWords = word_tokenize(symspelledLine)
     tokenCt = max([len(words), len(symWords)])
 
     bestLine = ""
@@ -155,8 +155,8 @@ def symSpellDoc(symSpell, vocab, text):
         sentences = []
         for line in lines:
             words = word_tokenize(line)
-            if ((len(words) == 1 and words[0] in vocab)
-                or has2ValidWords(words, vocab)):
+            if (len(words) == 1 and words[0] in vocab) \
+               or has2ValidWords(words, vocab):
                 sentences.append(bestSymspelledLine(words, symspell, line))
             # else drop the line as garbage
 
