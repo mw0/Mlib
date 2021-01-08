@@ -349,7 +349,7 @@ def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
             va = "bottom"
 
         # Use Y value as label and format number with one decimal place
-        label = "{:d}".format(y_value)
+        label = f"{y_value}"
 
         # Create annotation
         plt.annotate(

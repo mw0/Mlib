@@ -25,9 +25,9 @@ def plotLearningCurves(history, figsize=(12, 6)):
     if 'val_loss' in history.keys():
         valLoss = history['val_loss']
         lossMin = np.argmin(valLoss)
-    trainAcc = history['acc']
+    trainAcc = history['accuracy']
     if 'val_acc' in history.keys():
-        valAcc = history['val_acc']
+        valAcc = history['val_accuracy']
         accMax = np.argmax(valAcc)
     epochs = range(1, len(history['loss'])+1)
 
