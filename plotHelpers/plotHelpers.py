@@ -719,3 +719,28 @@ def dependencePlot(ind, shap_values, features, feature_names=None,
         with warnings.catch_warnings():  # ignore known matplotlib warnings
             warnings.simplefilter("ignore", RuntimeWarning)
             pl.show()
+
+
+def sortClassificationReport(classificationReport):
+    """
+    Re-orders output from metrics.classification_report so
+    that it is ordered by support, descending.
+    """
+    tmp = classificationReport.split("\n")
+    sortedReport = "\n".join(tmp[:2]) + "\n"
+    catValues = []
+    for line in tmp[2:-5]:
+        items = re.split(r'(\s+)', line)
+        newList = [''.join(items[:-8]), ''.join(items[-8:-6]),
+                   ''.join(items[-6:-4]), ''.join(items[-4:-2]),
+                   ''.join(items[-2:])]
+
+        catValues.append(newList)
+
+    catValues = sorted(catValues, key=lambda v: int(v[4]), reverse=True)
+
+    for repList in catValues:
+        sortedReport += (''.join(repList) + "\n")
+    sortedReport += "\n".join(tmp[-5:])
+    
+    return sortedReport
