@@ -125,6 +125,7 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
     axis.set_title(", ".join(['Confusion matrix', name, titleText]),
                    fontsize=titleFontSz)
     # locs, labels = plt.xticks()
+    print(xtickRotate, xtickFontSz, axis.get_xticklabels())
     axis.set_xticklabels(axis.get_xticklabels(), rotation=xtickRotate,
                          fontsize=xtickFontSz)
     axis.set_yticklabels(axis.get_yticklabels(), rotation=ytickRotate,
