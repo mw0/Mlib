@@ -125,10 +125,10 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
     axis.set_title(", ".join(['Confusion matrix', name, titleText]),
                    fontsize=titleFontSz)
     locs, labels = plt.xticks()
-    plt.setp(labels, rotation=xtickRotate, fontsize=xtickFontSz)
+    plt.xticks(locs, labels, rotation=xtickRotate, fontsize=xtickFontSz)
     print(labels, xtickRotate, xtickFontSz)
     locs, labels = plt.xticks()
-    plt.setp(labels, rotation=xtickRotate, fontsize=xtickFontSz)
+    plt.yticks(locs, labels, rotation=xtickRotate, fontsize=xtickFontSz)
     print(labels, ytickRotate, ytickFontSz)
     # plt.setp(axis.xaxis.get_majorticklabels(), rotation=xtickRotate,
     #          fontsize=xtickFontSz)
