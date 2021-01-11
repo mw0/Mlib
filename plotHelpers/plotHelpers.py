@@ -124,10 +124,16 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
     axis.set_xlabel('Predicted', fontsize=ylabelFontSz)
     axis.set_title(", ".join(['Confusion matrix', name, titleText]),
                    fontsize=titleFontSz)
-    plt.setp(axis.xaxis.get_majorticklabels(), rotation=xtickRotate,
-             fontsize=xtickFontSz)
-    plt.setp(axis.yaxis.get_majorticklabels(), rotation=ytickRotate,
-             fontsize=ytickFontSz)
+    locs, labels = plt.xticks()
+    plt.setp(labels, rotation=xtickRotate, fontsize=xtickFontSz)
+    print(labels, xtickRotate, xtickFontSz)
+    locs, labels = plt.xticks()
+    plt.setp(labels, rotation=xtickRotate, fontsize=xtickFontSz)
+    print(labels, ytickRotate, ytickFontSz)
+    # plt.setp(axis.xaxis.get_majorticklabels(), rotation=xtickRotate,
+    #          fontsize=xtickFontSz)
+    # plt.setp(axis.yaxis.get_majorticklabels(), rotation=ytickRotate,
+    #          fontsize=ytickFontSz)
     # plt.tight_layout(rect=[0.0, 0.03, 1.0, 0.97])
     plt.tight_layout(rect=[0.0, 0.10, 1.0, 0.90])
     if saveAs == 'pdf':
