@@ -124,15 +124,19 @@ def plotConfusionMatrix(confusionMat, xlabels=None, ylabels=None,
     axis.set_xlabel('Predicted', fontsize=ylabelFontSz)
     axis.set_title(", ".join(['Confusion matrix', name, titleText]),
                    fontsize=titleFontSz)
-    locs, labels = plt.xticks()
+    # locs, labels = plt.xticks()
+    plt.setp(ax.get_xticklabels(), rotation=xtickRotate, ha="right",
+             rotation_mode="anchor", fontsize=xtickFontSz)
+    plt.setp(ax.get_yticklabels(), rotation=ytickRotate, ha="right",
+             rotation_mode="anchor", fontsize=ytickFontSz)
     # axis.tick_params(axis='x', labelrotation=xtickRotate, labelsize=xtickFontSz)
-    axis.set_xticklabels(labels, rotation=xtickRotate, labelsize=xtickFontSz)
-    print(labels, xtickRotate, xtickFontSz)
-    locs, labels = plt.xticks()
+    # axis.set_xticklabels(labels, rotation=xtickRotate, labelsize=xtickFontSz)
+    # print(labels, xtickRotate, xtickFontSz)
+    # locs, labels = plt.xticks()
     # axis.set_yticks(locs, labels, rotation=xtickRotate, fontsize=xtickFontSz)
     # axis.tick_params(axis='y', labelrotation=ytickRotate, labelsize=ytickFontSz)
-    axis.set_yticklabels(labels, rotation=ytickRotate, labelsize=ytickFontSz)
-    print(labels, ytickRotate, ytickFontSz)
+    # axis.set_yticklabels(labels, rotation=ytickRotate, labelsize=ytickFontSz)
+    # print(labels, ytickRotate, ytickFontSz)
     # plt.setp(axis.xaxis.get_majorticklabels(), rotation=xtickRotate,
     #          fontsize=xtickFontSz)
     # plt.setp(axis.yaxis.get_majorticklabels(), rotation=ytickRotate,
