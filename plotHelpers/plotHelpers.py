@@ -317,35 +317,40 @@ def detailedHistogram(data, xlabel=None, ylabel=None,
 @timeUsage
 def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
                     xrot=65.0, ctRot=90.0, titleText=None, ax=None, saveAs=None,
+                    annotateFontSz=15, tickFontSz=15, titleFontSz=17,
                     xlim=None, ylim=None, dir='./'):
     """
     INPUTS:
         df			Pandas DataFrame
         colName		str, column whose item counts are to be histogrammed.
         barWidth	float, fractional width of histogram bars (1.0 for no
-                      gaps), default: 0.90
+                          gaps), default: 0.90
         figSz		tuple (type=float), size of figure in inches, default:
-                      (16.0, 10.0)
+                          (16.0, 10.0)
         xrot		float, angle by which column tick labels are rotated
-                      (x-axis), default: 65.0
+                	  (x-axis), default: 65.0
         ctRot		float, angle by which value counts are rotated
-                      (x-axis), default: 90.0
+                 	  (x-axis), default: 90.0
         titleText	str, title for plot
+        annotateFontSz	int/float, for numbers above bars
+        tickFontSz	int/float, for tick mark labels
+        titleFontSz	int/float, for figure title
         ax			optional matplotlib.axis object, default: None
         saveAs		str, in ['pdf', 'png', 'svg']
         xlim, ylim	list (type numeric), if not None will be used to set
-                      limits of plot.
-        dir			str, directory into which the plot should be saved,
-                      default: './'
+                          limits of plot.
+        dir		str, directory into which the plot should be saved,
+                          default: './'
     """
 
     classCts = pd.DataFrame(df[colName].value_counts())
 
     if ax is None:
-        ax = classCts.plot(kind='bar', width=barWidth, figsize=figSz, rot=xrot)
+        ax = classCts.plot(kind='bar', width=barWidth, figsize=figSz,
+                           fontsize=tickFontSz, rot=xrot)
     else:
         classCts.plot(kind='bar', width=barWidth, figsize=figSz,
-                      rot=xrot, ax=ax)
+                      fontsize=tickFontSz, rot=xrot, ax=ax)
 
     rects = ax.patches
 
@@ -378,6 +383,7 @@ def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
             label,                       # use `label` as label
             (x_value, y_value),          # place label at end of the bar
             rotation=ctRot,              # rotate value counts over bars
+            fontsize=annotateFontSz,     # size of text over bars
             xytext=(0, space),           # vertically shift label by `space`
             textcoords="offset points",  # interpret `xytext` as offset, points
             ha="center",                 # horizontally center label
@@ -397,7 +403,7 @@ def plotValueCounts(df, colName, barWidth=0.9, figSz=(16.0, 10.0),
         else:
             ax.set_ylim(ylim)
     if titleText is not None:
-        ax.set_title(titleText)
+        ax.set_title(titleText, fontsize=titleFontSz)
         titleWords = titleText.split(" ")
         regexSubs = r"[/'\":,\\\/\(\)\[\]\!\—\–\-\.]"
         fileNameAugmentString = "".join([re.sub(regexSubs, '', w)

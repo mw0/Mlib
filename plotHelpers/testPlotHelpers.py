@@ -114,6 +114,61 @@ def testPlotValueCounts():
     assert expectedMD5 == actualMD5
 
 
+def testSortClassificationReport():
+    classificationReport = ('                         precision    recall  '
+                            'f1-score   support\n\n   DELETION OF INTEREST '
+                            '      0.73      0.57      0.64       115\n    '
+                            '     RETURNED CHECK       0.90      0.90      '
+                            '0.90      9472\n                   BILL       '
+                            '0.33      0.18      0.23       144\n          '
+                            'POLICY CHANGE       0.86      0.90      0.88  '
+                            '    4464\n    CANCELLATION NOTICE       0.85  '
+                            '    0.86      0.86      4864\n            '
+                            'DECLARATION       0.88      0.79      0.83    '
+                            '   444\n     CHANGE ENDORSEMENT       0.47    '
+                            '  0.27      0.34       483\n     NON-RENEWAL '
+                            'NOTICE       0.93      0.91      0.92      '
+                            '2413\n                 BINDER       0.82      '
+                            '0.77      0.80       367\n   REINSTATEMENT '
+                            'NOTICE       0.76      0.75      0.76       '
+                            '114\n      EXPIRATION NOTICE       0.89      '
+                            '0.88      0.89       312\nINTENT TO CANCEL '
+                            'NOTICE       0.82      0.87      0.85      '
+                            '5280\n            APPLICATION       0.93      '
+                            '0.94      0.94      2183\n            BILL '
+                            'BINDER       0.96      0.88      0.92       '
+                            '374\n\n               accuracy                '
+                            '           0.87     31029\n              macro'
+                            ' avg       0.80      0.75      0.77     31029'
+                            '\n           weighted avg       0.87      0.87'
+                            '      0.87     31029\n')
+    expectedOut = ('                         precision    recall  f1-score  '
+                   ' support\n\n         RETURNED CHECK       0.90      0.90'
+                   '      0.90      9472\nINTENT TO CANCEL NOTICE       0.82      0.87      0.85      5280\n    CANCELLATION NOTICE       0.85      0.86    '
+                   '  0.86      4864\n          POLICY CHANGE       0.86    '
+                   '  0.90      0.88      4464\n     NON-RENEWAL NOTICE     '
+                   '  0.93      0.91      0.92      2413\n            '
+                   'APPLICATION       0.93      0.94      0.94      2183\n  '
+                   '   CHANGE ENDORSEMENT       0.47      0.27      0.34    '
+                   '   483\n            DECLARATION       0.88      0.79    '
+                   '  0.83       444\n            BILL BINDER       0.96    '
+                   '  0.88      0.92       374\n                 BINDER     '
+                   '  0.82      0.77      0.80       367\n      EXPIRATION '
+                   'NOTICE       0.89      0.88      0.89       312\n       '
+                   '            BILL       0.33      0.18      0.23       '
+                   '144\n   DELETION OF INTEREST       0.73      0.57      '
+                   '0.64       115\n   REINSTATEMENT NOTICE       0.76      '
+                   '0.75      0.76       114\n\n               accuracy     '
+                   '                      0.87     31029\n              '
+                   'macro avg       0.80      0.75      0.77     31029\n    '
+                   '       weighted avg       0.87      0.87      0.87     '
+                   '31029\n')
+
+    actualOut = sortClassificationReport(classificationReport)
+
+    assert actualOut == expectedOut
+
+
 def testTimeUsage(capsys):
     seconds = 2.15
     sleeper(seconds)
