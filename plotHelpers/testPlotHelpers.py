@@ -47,7 +47,7 @@ def testPlotConfusionMatrix():
         datums = veriFile.read()
         actualMD5 = hashlib.md5(datums).hexdigest()
 
-    expectedMD5 = '85450090160f65463aa39d66adcb875f'
+    expectedMD5 = '068f1f522fbcff839e9d59a8fc212bd8'
 
     assert expectedMD5 == actualMD5
 
